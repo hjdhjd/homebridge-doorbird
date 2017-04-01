@@ -1,0 +1,25 @@
+{
+  "bridge": {
+    "name": "Homebridge",
+    "username": "XX:XX:XX:XX:XX:XX",
+    "port": 51827,
+    "pin": "xxx-xx-xxx"
+  },
+  "platforms": [
+    {
+      "platform": "Doorbell",
+      "doorbells": [
+        {
+          "name": "DoorBird",
+          "doorbird_ip": "",
+          "doorbird_username": "",
+          "doorbird_password": "",
+          "doorbird_url": "/bha-api/monitor.cgi?ring=doorbell"
+        }
+      ]
+    }
+  ],
+  "accessories": [
+
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "homebridge-doorbird",
+  "version": "0.0.1",
+  "description": "DoorBird plugin for homebridge: https://github.com/nfarina/homebridge",
+  "license": "ISC",
+  "keywords": [
+    "DoorBird",
+    "HomeBridge",
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "node": ">=4.0.0",
+    "homebridge": ">=0.2.0"
+  },
+  "author": {
+    "name": "Adrian Brown"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brownad/homebridge-doorbird.git"
+  },
+  "dependencies": {
+    "request": "^2.65.0",
+    "hyperquest": "2.1.2"
+  }
+}
