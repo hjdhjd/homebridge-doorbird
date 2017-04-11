@@ -17,7 +17,7 @@ sudo npm install -g homebridge
 sudo npm install -g git+https://github.com/brownad/homebridge-doorbird.git
 ```
 3 Configure plugin:
-```sh
+```
  Update your configuration file. See config.json in this repository for a sample.
 ```
 If you want it to trigger off the motion sensor, swap the `doorbell` for `motionsensor`.  Or have them both.
