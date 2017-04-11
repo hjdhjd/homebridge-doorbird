@@ -35,41 +35,41 @@ function DoorBirdAccessory(log, config) {
   this.password = config["doorbird_password"];
   this.ip = config["doorbird_ip"];
   this.url = config["doorbird_url"];
-  this.binaryState = 0; 
+  this.serial = config["serial"] || "4260423860001";
+  this.model = config["model"] || "D101";
+  this.binaryState = 0;
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
   this.service;
   this.timeout = 2;
-  var url = "http://" + this.ip + this.url + "&http-user=" + this.username + "&http-password=" + this.password 
- 
+  var url = "http://" + this.ip + this.url + "&http-user=" + this.username + "&http-password=" + this.password
+
   var r = hyperquest(url)
   r.on('data', function(response) {
     var doorbirdResponse = String(response)
     var doorbellState = doorbirdResponse.split(/[:]+/).pop();
     if(doorbellState.trim() != "L") {
-      console.log("DoorBird doorbell pressed");
-      setTimeout(function() {
-        self.log("DoorBird doorbell pressed");
- 	self.service.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
- 	}.bind(self), 10);
-      
+          setTimeout(function() {
+ 	        self.service.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
+ 	      }.bind(self), 10);
+
       //reset state
       setTimeout(function() {
         console.log("Resetting Doorbird")
         self.service.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
-        }.bind(self), 5000); 
-      };  
+        }.bind(self), 5000);
+      };
     })
-   };	  
+   };
 
 DoorBirdAccessory.prototype.getServices = function() {
     var informationService = new Service.AccessoryInformation();
     informationService
       .setCharacteristic(Characteristic.Manufacturer, "DoorBird")
-      .setCharacteristic(Characteristic.Model, "D101")
-      .setCharacteristic(Characteristic.SerialNumber, "4260423860001");
-	
+      .setCharacteristic(Characteristic.Model, this.model)
+      .setCharacteristic(Characteristic.SerialNumber, this.serial);
+
     this.service = new Service.MotionSensor(this.name);
-    
+
     var targetChar = this.service
       .getCharacteristic(Characteristic.MotionDetected);
 
