@@ -35,8 +35,8 @@ function DoorBirdAccessory(log, config) {
   this.password = config["doorbird_password"];
   this.ip = config["doorbird_ip"];
   this.url = config["doorbird_url"];
-  this.serial = config["serial"] || "4260423860001";
-  this.model = config["model"] || "D101";
+  this.serial = config["doorbird_serial"] || "4260423860001";
+  this.model = config["doorbird_model"] || "D101";
   this.binaryState = 0;
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
   this.service;
