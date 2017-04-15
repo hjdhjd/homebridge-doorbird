@@ -54,7 +54,7 @@ function DoorBirdAccessory(log, config) {
     var doorbellState = doorbirdResponse.match(/doorbell:H/g);
     var motionState = doorbirdResponse.match(/motionsensor:H/g);
 
-    if(doorbellState == 'doorbell:H') {
+    if(doorbellState) {
           setTimeout(function() {
  	        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
  	      }.bind(self), 10);
