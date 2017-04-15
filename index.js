@@ -20,8 +20,8 @@ DoorBirdPlatform.prototype = {
     var count = this.devices.length;
 
     for(index = 0; index < count; index++){
-		  var accessory  = new DoorBirdAccessory(this.log, this.devices[index]);
-		  foundAccessories.push(accessory);
+		  var doorBellAccessory  = new DoorBirdAccessory(this.log, this.devices[index]);
+		  foundAccessories.push(doorBellAccessory);
 	  }
       callback(foundAccessories);
   }
@@ -34,28 +34,45 @@ function DoorBirdAccessory(log, config) {
   this.username = config["doorbird_username"];
   this.password = config["doorbird_password"];
   this.ip = config["doorbird_ip"];
-  this.url = config["doorbird_url"];
+  this.monitor = '/bha-api/monitor.cgi?ring=doorbell,motionsensor';
+  this.open = '/bha-api/open-door.cgi?'
   this.serial = config["doorbird_serial"] || "4260423860001";
   this.model = config["doorbird_model"] || "D101";
   this.binaryState = 0;
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
-  this.service;
+  this.doorbellService;
+  this.motionService;
   this.timeout = 2;
-  var url = "http://" + this.ip + this.url + "&http-user=" + this.username + "&http-password=" + this.password
 
-  var r = hyperquest(url)
+  var activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
+  var lockUrl = "http://" + this.ip + this.open + "&http-user=" + this.username + "&http-password=" + this.password
+
+  //Handle streaming requests for motion and doorbell
+  var r = hyperquest(activityUrl)
   r.on('data', function(response) {
     var doorbirdResponse = String(response)
-    var doorbellState = doorbirdResponse.split(/[:]+/).pop();
-    if(doorbellState.trim() != "L") {
+    var doorbellState = doorbirdResponse.match(/doorbell:H/g);
+    var motionState = doorbirdResponse.match(/motionsensor:H/g);
+
+    if(doorbellState == 'doorbell:H') {
           setTimeout(function() {
- 	        self.service.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
+ 	        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
  	      }.bind(self), 10);
 
-      //reset state
       setTimeout(function() {
-        console.log("Resetting Doorbird")
-        self.service.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
+        console.log('Resetting Doorbird doorbell')
+        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
+        }.bind(self), 5000);
+      };
+
+    if(motionState) {
+          setTimeout(function() {
+          self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
+        }.bind(self), 10);
+
+      setTimeout(function() {
+        console.log('Resetting Doorbird motion')
+        self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
         }.bind(self), 5000);
       };
     })
@@ -68,10 +85,8 @@ DoorBirdAccessory.prototype.getServices = function() {
       .setCharacteristic(Characteristic.Model, this.model)
       .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
-    this.service = new Service.MotionSensor(this.name);
+    this.doorbellService = new Service.MotionSensor(this.name + ' Doorbell', 'Doorbell');
+    this.motionService = new Service.MotionSensor(this.name + ' Motion', 'Motion');
 
-    var targetChar = this.service
-      .getCharacteristic(Characteristic.MotionDetected);
-
-return [this.service, informationService];
+    return [this.doorbellService, this.motionService, informationService];
 };

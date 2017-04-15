@@ -15,8 +15,7 @@
           "doorbird_username": "",
           "doorbird_password": "",
           "doorbird_model": "",
-          "doorbird_serial": "",
-          "doorbird_url": "/bha-api/monitor.cgi?ring=doorbell"
+          "doorbird_serial": ""
         }
       ]
     }
