@@ -2,7 +2,7 @@
 
 `homebridge-doorbird` is a plugin for Homebridge.  Giving you a basic experience with your [DoorBird](https://www.doorbird.com) unit.
 
-It connects a motion sensor to your DoorBird unit, acting on doorbell and a separate motion sensor for motion activity.  Add the motion sensors to the same room as the camera stream (use [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg)) and activate notifications on the sensors if you want iOS notifications pushed to your Home screen (requires a HomeKit Hub e.g. Apple TV or iPad).  
+It connects a motion sensor to your DoorBird unit, acting on doorbell and a separate motion sensor for motion activity.  Add the motion sensors to the same room as the camera stream (use [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg)) and activate notifications on the sensors if you want iOS notifications pushed to your Home screen (requires a HomeKit Hub e.g. Apple TV or iPad).  You can also trigger the door open and the light on the DoorBird.
 
 ## Installation
 
