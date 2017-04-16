@@ -5,6 +5,7 @@ var hyperquest = require('hyperquest');
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
+
   homebridge.registerPlatform("homebridge-doorbird", "Doorbell", DoorBirdPlatform);
 };
 
@@ -35,17 +36,66 @@ function DoorBirdAccessory(log, config) {
   this.password = config["doorbird_password"];
   this.ip = config["doorbird_ip"];
   this.monitor = '/bha-api/monitor.cgi?ring=doorbell,motionsensor';
-  this.open = '/bha-api/open-door.cgi?'
+  this.open = '/bha-api/open-door.cgi?';
+  this.light = '/bha-api/light-on.cgi?';
   this.serial = config["doorbird_serial"] || "4260423860001";
   this.model = config["doorbird_model"] || "D101";
   this.binaryState = 0;
-  this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
   this.doorbellService;
   this.motionService;
   this.timeout = 2;
+  this.doorbellService = new Service.MotionSensor(this.name + ' Doorbell', 'Doorbell');
+  this.motionService = new Service.MotionSensor(this.name + ' Motion', 'Motion');
+  this.lightService = new Service.Lightbulb(this.name + ' Light');
+  this.openDoorService = new Service.Door(this.name + ' Lock');
+
+  this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
 
   var activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
   var lockUrl = "http://" + this.ip + this.open + "&http-user=" + this.username + "&http-password=" + this.password
+  var lightUrl =  "http://" + this.ip + this.light + "&http-user=" + this.username + "&http-password=" + this.password
+
+  //Night vision event
+  this.lightService.getCharacteristic(Characteristic.On)
+    .on('set', function(value, callback) {
+      request.get({
+        url: lightUrl,
+        }, function(err, response, body) {
+          if (!err && response.statusCode == 200) {
+            console.log('Night vision activated for 3 minutes');
+            setTimeout(function() {
+              console.log('Resetting light event');
+              this.lightService.getCharacteristic(Characteristic.On).updateValue(0);
+              }.bind(self), 5000);
+          }
+          else {
+            console.log("Error '%s' setting light. Response: %s", err, body);
+            callback(err || new Error("Error setting light state"));
+          }
+      });
+      callback();
+  });
+
+  //Open door event
+  this.openDoorService.getCharacteristic(Characteristic.TargetPosition)
+    .on('set', function(value, callback) {
+      request.get({
+        url: lockUrl,
+        }, function(err, response, body) {
+          if (!err && response.statusCode == 200) {
+            console.log('DoorBird open door activated')
+            setTimeout(function() {
+              console.log('Resetting open door event');
+              this.openDoorService.getCharacteristic(Characteristic.TargetPosition).updateValue(0);
+            }.bind(self), 5000);
+          }
+          else {
+            console.log("Error '%s' opening lock. Response: %s", err, body);
+            callback(err || new Error("Error setting lock state"));
+          }
+      });
+      callback();
+  });
 
   //Handle streaming requests for motion and doorbell
   var r = hyperquest(activityUrl)
@@ -85,8 +135,5 @@ DoorBirdAccessory.prototype.getServices = function() {
       .setCharacteristic(Characteristic.Model, this.model)
       .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
-    this.doorbellService = new Service.MotionSensor(this.name + ' Doorbell', 'Doorbell');
-    this.motionService = new Service.MotionSensor(this.name + ' Motion', 'Motion');
-
-    return [this.doorbellService, this.motionService, informationService];
+    return [this.doorbellService, this.motionService, this.lightService, this.openDoorService, informationService];
 };
