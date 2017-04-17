@@ -47,7 +47,7 @@ function DoorBirdAccessory(log, config) {
   this.doorbellService = new Service.MotionSensor(this.name + ' Doorbell', 'Doorbell');
   this.motionService = new Service.MotionSensor(this.name + ' Motion', 'Motion');
   this.lightService = new Service.Lightbulb(this.name + ' Light');
-  this.openDoorService = new Service.LockMechanism(this.name + ' Lock');
+  this.openDoorService = new Service.Door(this.name + ' Lock');
 
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
 
@@ -77,7 +77,7 @@ function DoorBirdAccessory(log, config) {
   });
 
   //Open door event
-  this.openDoorService.getCharacteristic(Characteristic.LockCurrentState)
+  this.openDoorService.getCharacteristic(Characteristic.TargetPosition)
     .on('set', function(value, callback) {
       request.get({
         url: lockUrl,
@@ -86,7 +86,7 @@ function DoorBirdAccessory(log, config) {
             console.log('DoorBird open door activated')
             setTimeout(function() {
               console.log('Resetting open door event');
-              this.openDoorService.getCharacteristic(Characteristic.TargetPosition).updateValue(0);
+              this.openDoorService.getCharacteristic(Characteristic.TargetPosition).updatValue(0);
             }.bind(self), 5000);
           }
           else {
