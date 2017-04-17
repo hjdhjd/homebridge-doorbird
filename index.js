@@ -86,7 +86,7 @@ function DoorBirdAccessory(log, config) {
             console.log('DoorBird open door activated')
             setTimeout(function() {
               console.log('Resetting open door event');
-              this.openDoorService.getCharacteristic(Characteristic.TargetPosition).updatValue(0);
+              this.openDoorService.getCharacteristic(Characteristic.TargetPosition).updateValue(0);
             }.bind(self), 5000);
           }
           else {
