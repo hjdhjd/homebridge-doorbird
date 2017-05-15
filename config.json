@@ -8,7 +8,7 @@
   "platforms": [
     {
       "platform": "DoorBird",
-      "doorbells": [
+      "doorbird": [
         {
           "name": "DoorBird",
           "doorbird_ip": "",
