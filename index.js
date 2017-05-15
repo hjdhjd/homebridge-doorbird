@@ -6,12 +6,12 @@ module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
 
-  homebridge.registerPlatform("homebridge-doorbird", "Doorbell", DoorBirdPlatform);
+  homebridge.registerPlatform("homebridge-doorbird", "DoorBird", DoorBirdPlatform);
 };
 
 function DoorBirdPlatform(log, config) {
   this.log = log;
-  this.devices = config["doorbells"];
+  this.devices = config["doorbird"];
   log("Starting discovery...");
 }
 
@@ -21,14 +21,14 @@ DoorBirdPlatform.prototype = {
     var count = this.devices.length;
 
     for(index = 0; index < count; index++){
-		  var doorBellAccessory  = new DoorBirdAccessory(this.log, this.devices[index]);
-		  foundAccessories.push(doorBellAccessory);
+		  var doorBird  = new DoorBird(this.log, this.devices[index]);
+		  foundAccessories.push(doorBird);
 	  }
       callback(foundAccessories);
   }
 };
 
-function DoorBirdAccessory(log, config) {
+function DoorBird(log, config) {
   var self = this;
   this.log = log;
   this.name = config["name"];
@@ -40,20 +40,30 @@ function DoorBirdAccessory(log, config) {
   this.light = '/bha-api/light-on.cgi?';
   this.serial = config["doorbird_serial"] || "4260423860001";
   this.model = config["doorbird_model"] || "D101";
+  this.currentState =  true;
+  this.log("DoorBird lock state is default " + this.currentState);
   this.binaryState = 0;
-  this.doorbellService;
-  this.motionService;
   this.timeout = 2;
   this.doorbellService = new Service.MotionSensor(this.name + ' Doorbell', 'Doorbell');
   this.motionService = new Service.MotionSensor(this.name + ' Motion', 'Motion');
   this.lightService = new Service.Lightbulb(this.name + ' Light');
-  this.openDoorService = new Service.Door(this.name + ' Lock');
+  this.lockService = new Service.LockMechanism(this.name + ' Lock');
 
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
 
   var activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
-  var lockUrl = "http://" + this.ip + this.open + "&http-user=" + this.username + "&http-password=" + this.password
+  this.lockUrl = "http://" + this.ip + this.open + "&http-user=" + this.username + "&http-password=" + this.password
   var lightUrl =  "http://" + this.ip + this.light + "&http-user=" + this.username + "&http-password=" + this.password
+
+  //Unlock door event
+  this.lockService
+    .getCharacteristic(Characteristic.LockCurrentState)
+    .on('get', this.getState.bind(this));
+
+  this.lockService
+    .getCharacteristic(Characteristic.LockTargetState)
+    .on('get', this.getState.bind(this))
+    .on('set', this.setState.bind(this));
 
   //Night vision event
   this.lightService.getCharacteristic(Characteristic.On)
@@ -64,7 +74,7 @@ function DoorBirdAccessory(log, config) {
           if (!err && response.statusCode == 200) {
             console.log('Night vision activated for 3 minutes');
             setTimeout(function() {
-              console.log('Resetting light event');
+              this.log('Resetting light event');
               this.lightService.getCharacteristic(Characteristic.On).updateValue(0);
               }.bind(self), 5000);
           }
@@ -76,28 +86,7 @@ function DoorBirdAccessory(log, config) {
       callback();
   });
 
-  //Open door event
-  this.openDoorService.getCharacteristic(Characteristic.TargetPosition)
-    .on('set', function(value, callback) {
-      request.get({
-        url: lockUrl,
-        }, function(err, response, body) {
-          if (!err && response.statusCode == 200) {
-            console.log('DoorBird open door activated')
-            setTimeout(function() {
-              console.log('Resetting open door event');
-              this.openDoorService.getCharacteristic(Characteristic.TargetPosition).updateValue(0);
-            }.bind(self), 5000);
-          }
-          else {
-            console.log("Error '%s' opening lock. Response: %s", err, body);
-            callback(err || new Error("Error setting lock state"));
-          }
-      });
-      callback();
-  });
-
-  //Handle streaming requests for motion and doorbell
+  //Handle streaming requests for motion and doorbell sensors
   var r = hyperquest(activityUrl)
   r.on('data', function(response) {
     var doorbirdResponse = String(response)
@@ -128,12 +117,43 @@ function DoorBirdAccessory(log, config) {
     })
    };
 
-DoorBirdAccessory.prototype.getServices = function() {
+DoorBird.prototype.setState = function(state, callback) {
+  var lockState = (state == Characteristic.LockTargetState.SECURED) ? "lock" : "unlock";
+	this.log("Set state to ", lockState);
+  this.currentState = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
+  request.get({
+    url: this.lockUrl,
+    }, function(err, response, body) {
+      if (!err && response.statusCode == 200) {
+        setTimeout(function() {
+          //wait
+          console.log("DoorBird lock opened")
+        }.bind(this), 5000);
+      }
+      else {
+        this.log("Error '%s' opening lock. Response: %s", err, body);
+        callback(err || new Error("Error setting lock state"));
+      }
+  });
+
+  //show state
+  this.lockService
+    .setCharacteristic(Characteristic.LockCurrentState, this.currentState);
+
+    callback(null);
+};
+
+DoorBird.prototype.getState = function(callback) {
+  this.log("DoorBird lock state is " + this.currentState);
+  callback(null, this.currentState);
+}
+
+DoorBird.prototype.getServices = function() {
     var informationService = new Service.AccessoryInformation();
     informationService
       .setCharacteristic(Characteristic.Manufacturer, "DoorBird")
       .setCharacteristic(Characteristic.Model, this.model)
       .setCharacteristic(Characteristic.SerialNumber, this.serial);
 
-    return [this.doorbellService, this.motionService, this.lightService, this.openDoorService, informationService];
+    return [this.doorbellService, this.motionService, this.lightService, this.lockService, informationService];
 };
