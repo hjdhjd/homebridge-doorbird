@@ -119,28 +119,40 @@ function DoorBird(log, config) {
 
 DoorBird.prototype.setState = function(state, callback) {
   var lockState = (state == Characteristic.LockTargetState.SECURED) ? "lock" : "unlock";
-	this.log("Set state to ", lockState);
-  this.currentState = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
-  request.get({
-    url: this.lockUrl,
-    }, function(err, response, body) {
-      if (!err && response.statusCode == 200) {
-        setTimeout(function() {
-          //wait
-          console.log("DoorBird lock opened")
-        }.bind(this), 5000);
-      }
-      else {
-        this.log("Error '%s' opening lock. Response: %s", err, body);
-        callback(err || new Error("Error setting lock state"));
-      }
-  });
+	console.log("Set state to ", lockState);
+  self = this;
+  self.currentState = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
 
-  //show state
-  this.lockService
-    .setCharacteristic(Characteristic.LockCurrentState, this.currentState);
+  if (lockState == "unlock") {
+    request.get({
+      url: this.lockUrl,
+      }, function(err, response, body) {
+        if (!err && response.statusCode == 200) {
+
+          setTimeout(function() {
+            console.log("DoorBird lock opened")
+            //set state to unlocked
+            self.lockService
+              .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
+          }.bind(this), 2000);
+        }
+
+        else {
+          console.log("Error '%s' opening lock. Response: %s", err, body);
+          callback(err || new Error("Error setting lock state"));
+        }
+      });
+    }
+
+    else {
+      console.log("DoorBird lock locked manually")
+      //set state to unlocked
+      self.lockService
+        .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
+    }
 
     callback(null);
+
 };
 
 DoorBird.prototype.getState = function(callback) {
