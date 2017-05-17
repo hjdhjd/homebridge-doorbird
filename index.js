@@ -119,6 +119,8 @@ function DoorBird(log, config) {
 
 DoorBird.prototype.setState = function(state, callback) {
   var lockState = (state == Characteristic.LockTargetState.SECURED) ? "lock" : "unlock";
+  var update = (state == Characteristic.LockTargetState.SECURED) ? true : false;
+
 	console.log("Set state to ", lockState);
   self = this;
   self.currentState = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
@@ -129,12 +131,21 @@ DoorBird.prototype.setState = function(state, callback) {
       }, function(err, response, body) {
         if (!err && response.statusCode == 200) {
 
-          setTimeout(function() {
-            console.log("DoorBird lock opened")
-            //set state to unlocked
-            self.lockService
-              .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.UNSECURED);
-          }.bind(this), 2000);
+          //set state to unlocked
+          self.lockService
+            .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
+          console.log("DoorBird lock opened")
+
+          if(!update) {
+            setTimeout(function() {
+              //set state to unlocked
+              self.lockService
+                .setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
+                .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
+                update = true;
+              console.log("DoorBird auto-locked")
+            }.bind(this), 4000);
+          }
         }
 
         else {
@@ -142,13 +153,6 @@ DoorBird.prototype.setState = function(state, callback) {
           callback(err || new Error("Error setting lock state"));
         }
       });
-    }
-
-    else {
-      console.log("DoorBird lock locked manually")
-      //set state to unlocked
-      self.lockService
-        .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
     }
 
     callback(null);
