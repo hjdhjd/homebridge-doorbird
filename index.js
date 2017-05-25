@@ -50,9 +50,9 @@ function DoorBird(log, config) {
 
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
 
-  var activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
+  this.activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
   this.lockUrl = "http://" + this.ip + this.open + "&http-user=" + this.username + "&http-password=" + this.password
-  var lightUrl =  "http://" + this.ip + this.light + "&http-user=" + this.username + "&http-password=" + this.password
+  this.lightUrl =  "http://" + this.ip + this.light + "&http-user=" + this.username + "&http-password=" + this.password
 
   //Unlock door event
   this.lockService
@@ -68,7 +68,7 @@ function DoorBird(log, config) {
   this.lightService.getCharacteristic(Characteristic.On)
     .on('set', function(value, callback) {
       request.get({
-        url: lightUrl,
+        url: this.lightUrl,
         }, function(err, response, body) {
           if (!err && response.statusCode == 200) {
             console.log('Night vision activated for 3 minutes');
@@ -86,7 +86,7 @@ function DoorBird(log, config) {
   });
 
   //Handle streaming requests for motion and doorbell sensors
-  var r = hyperquest(activityUrl)
+  var r = hyperquest(this.activityUrl)
   r.on('data', function(response) {
     var doorbirdResponse = String(response)
     var doorbellState = doorbirdResponse.match(/doorbell:H/g);
