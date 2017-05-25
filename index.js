@@ -41,7 +41,6 @@ function DoorBird(log, config) {
   this.serial = config["doorbird_serial"] || "4260423860001";
   this.model = config["doorbird_model"] || "D101";
   this.currentState =  true;
-  this.log("DoorBird lock state is default " + this.currentState);
   this.binaryState = 0;
   this.timeout = 2;
   this.doorbellService = new Service.MotionSensor(this.name + ' Doorbell', 'Doorbell');
