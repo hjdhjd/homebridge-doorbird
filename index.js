@@ -159,7 +159,6 @@ DoorBird.prototype.setState = function(state, callback) {
 };
 
 DoorBird.prototype.getState = function(callback) {
-  this.log("DoorBird lock state is " + this.currentState);
   callback(null, this.currentState);
 }
 
