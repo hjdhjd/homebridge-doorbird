@@ -88,7 +88,6 @@ function DoorBird(log, config) {
   //Handle streaming requests for motion and doorbell sensors
   var r = hyperquest(activityUrl)
   r.on('data', function(response) {
-    console.log(activityUrl)
     var doorbirdResponse = String(response)
     var doorbellState = doorbirdResponse.match(/doorbell:H/g);
     var motionState = doorbirdResponse.match(/motionsensor:H/g);
