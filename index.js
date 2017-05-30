@@ -71,14 +71,14 @@ function DoorBird(log, config) {
         url: lightUrl,
         }, function(err, response, body) {
           if (!err && response.statusCode == 200) {
-            console.log('Night vision activated for 3 minutes');
+            self.log('DoorBird night vision activated for 3 minutes');
             setTimeout(function() {
-              this.log('Resetting light event');
+              this.log('DoorBird resetting light event');
               this.lightService.getCharacteristic(Characteristic.On).updateValue(0);
               }.bind(self), 5000);
           }
           else {
-            console.log("Error '%s' setting light. Response: %s", err, body);
+            self.log("DoorBird error '%s' setting light. Response: %s", err, body);
             callback(err || new Error("Error setting light state"));
           }
       });
@@ -99,7 +99,7 @@ function DoorBird(log, config) {
    	      }.bind(self), 10);
 
         setTimeout(function() {
-          console.log('Resetting Doorbird doorbell')
+          self.log('DoorBird resetting doorbell')
           self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
           }.bind(self), 5000);
         };
@@ -110,7 +110,7 @@ function DoorBird(log, config) {
           }.bind(self), 10);
 
         setTimeout(function() {
-          console.log('Resetting Doorbird motion')
+          self.log('Doorbird resetting motion')
           self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
           }.bind(self), 5000);
         };
@@ -124,8 +124,9 @@ function DoorBird(log, config) {
 DoorBird.prototype.setState = function(state, callback) {
   var lockState = (state == Characteristic.LockTargetState.SECURED) ? "lock" : "unlock";
   var update = (state == Characteristic.LockTargetState.SECURED) ? true : false;
+  self = this;
 
-	console.log("Set state to ", lockState);
+	self.log("DoorBird set state to ", lockState);
   self = this;
   self.currentState = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
 
@@ -138,7 +139,7 @@ DoorBird.prototype.setState = function(state, callback) {
           //set state to unlocked
           self.lockService
             .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
-          console.log("DoorBird lock opened")
+          self.log("DoorBird lock opened")
 
           if(!update) {
             setTimeout(function() {
@@ -147,14 +148,14 @@ DoorBird.prototype.setState = function(state, callback) {
                 .setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
                 .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
                 update = true;
-              console.log("DoorBird auto-locked")
+              self.log("DoorBird auto lock initiated")
             }.bind(this), 4000);
           }
         }
 
         else {
-          console.log("Error '%s' opening lock. Response: %s", err, body);
-          callback(err || new Error("Error setting lock state"));
+          self.log("DoorBird error '%s' opening lock. Response: %s", err, body);
+          callback(err || new Error("DoorBird error setting lock state"));
         }
       });
     }
