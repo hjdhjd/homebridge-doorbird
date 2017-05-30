@@ -85,14 +85,15 @@ function DoorBird(log, config) {
       callback();
   });
 
+  console.log(activityUrl)
   //Handle streaming requests for motion and doorbell sensors
   var r = hyperquest(activityUrl)
   r.on('data', function(response) {
-    var doorbirdResponse = String(response)
+
     var doorbellState = doorbirdResponse.match(/doorbell:H/g);
     var motionState = doorbirdResponse.match(/motionsensor:H/g);
-
-    if (response.statusCode == 200) {
+    //debug
+    console.log(response)
       if(doorbellState) {
             setTimeout(function() {
    	        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
@@ -114,9 +115,6 @@ function DoorBird(log, config) {
           self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
           }.bind(self), 5000);
         };
-      }
-      else {
-        self.log("DoorBird error with streaming connection '%s' ", doorbirdResponse);
       }
     })
    };
