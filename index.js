@@ -85,7 +85,6 @@ function DoorBird(log, config) {
       callback();
   });
 
-  console.log(activityUrl)
   //Handle streaming requests for motion and doorbell sensors
   var r = hyperquest(activityUrl)
   r.on('data', function(response) {
