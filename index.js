@@ -116,7 +116,7 @@ function DoorBird(log, config) {
         };
       }
       else {
-        console.log("Error with streaming connection '%s' ", doorbirdResponse);
+        self.log("DoorBird error with streaming connection '%s' ", doorbirdResponse);
       }
     })
    };
