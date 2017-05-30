@@ -50,9 +50,9 @@ function DoorBird(log, config) {
 
   this.log("Starting a homebridge-doorbird device with name '" + this.name + "'...");
 
-  this.activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
+  var activityUrl = "http://" + this.ip + this.monitor + "&http-user=" + this.username + "&http-password=" + this.password
   this.lockUrl = "http://" + this.ip + this.open + "&http-user=" + this.username + "&http-password=" + this.password
-  this.lightUrl =  "http://" + this.ip + this.light + "&http-user=" + this.username + "&http-password=" + this.password
+  var lightUrl =  "http://" + this.ip + this.light + "&http-user=" + this.username + "&http-password=" + this.password
 
   //Unlock door event
   this.lockService
@@ -68,7 +68,7 @@ function DoorBird(log, config) {
   this.lightService.getCharacteristic(Characteristic.On)
     .on('set', function(value, callback) {
       request.get({
-        url: this.lightUrl,
+        url: lightUrl,
         }, function(err, response, body) {
           if (!err && response.statusCode == 200) {
             console.log('Night vision activated for 3 minutes');
@@ -86,33 +86,39 @@ function DoorBird(log, config) {
   });
 
   //Handle streaming requests for motion and doorbell sensors
-  var r = hyperquest(this.activityUrl)
+  var r = hyperquest(activityUrl)
   r.on('data', function(response) {
+    console.log(activityUrl)
     var doorbirdResponse = String(response)
     var doorbellState = doorbirdResponse.match(/doorbell:H/g);
     var motionState = doorbirdResponse.match(/motionsensor:H/g);
 
-    if(doorbellState) {
-          setTimeout(function() {
- 	        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
- 	      }.bind(self), 10);
+    if (response.statusCode == 200) {
+      if(doorbellState) {
+            setTimeout(function() {
+   	        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
+   	      }.bind(self), 10);
 
-      setTimeout(function() {
-        console.log('Resetting Doorbird doorbell')
-        self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
-        }.bind(self), 5000);
-      };
+        setTimeout(function() {
+          console.log('Resetting Doorbird doorbell')
+          self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
+          }.bind(self), 5000);
+        };
 
-    if(motionState) {
-          setTimeout(function() {
-          self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
-        }.bind(self), 10);
+      if(motionState) {
+            setTimeout(function() {
+            self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
+          }.bind(self), 10);
 
-      setTimeout(function() {
-        console.log('Resetting Doorbird motion')
-        self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
-        }.bind(self), 5000);
-      };
+        setTimeout(function() {
+          console.log('Resetting Doorbird motion')
+          self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
+          }.bind(self), 5000);
+        };
+      }
+      else {
+        console.log("Error with streaming connection '%s' ", doorbirdResponse);
+      }
     })
    };
 
