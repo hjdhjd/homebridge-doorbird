@@ -20,7 +20,6 @@
     "url": "git://github.com/brownad/homebridge-doorbird.git"
   },
   "dependencies": {
-    "request": "2.65.0",
-    "hyperquest": "2.1.2"
+    "http": "0.0.0"
   }
 }
