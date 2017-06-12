@@ -15,7 +15,8 @@
           "doorbird_username": "",
           "doorbird_password": "",
           "doorbird_model": "",
-          "doorbird_serial": ""
+          "doorbird_serial": "",
+          "http_port": "8080"
         }
       ]
     }
