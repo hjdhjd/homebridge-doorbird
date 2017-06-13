@@ -1,5 +1,6 @@
 var Service, Characteristic;
 var http = require("http");
+var request = require("request");
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
