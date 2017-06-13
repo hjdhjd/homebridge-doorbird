@@ -25,10 +25,15 @@ sudo npm install -g git+https://github.com/brownad/homebridge-doorbird.git
 
 Add the platform in [`config.json`](https://github.com/brownad/homebridge-doorbird/blob/master/config.json) in your home directory inside `.homebridge`.  
 
-This uses the DoorBird notifications API, you must register your endpoint like so:
+This uses the DoorBird notifications API, you must register your endpoint(s) like so:
 
+* Doorbell
 ```sh
 wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=doorbell&subscribe=1&url=http://homebridge-ip:8080/doorbell.html'
+```
+* Motion sensor
+```sh
+wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=motionsensor&subscribe=1&url=http://homebridge-ip:8080/motion.html'
 ```
 
 ## Note
