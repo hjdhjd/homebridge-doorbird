@@ -80,7 +80,7 @@ function DoorBird(log, config) {
             }.bind(self), 10);
 
             setTimeout(function () {
-                self.log('DoorBird resetting mtion')
+                self.log('DoorBird resetting motion')
                 self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
             }.bind(self), 5000);
         } else {
