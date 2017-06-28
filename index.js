@@ -1,6 +1,7 @@
 var Service, Characteristic;
 var http = require("http");
 var request = require("request");
+var exec = require("child_process").exec;
 
 module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
@@ -40,6 +41,8 @@ function DoorBird(log, config) {
     this.light = '/bha-api/light-on.cgi?';
     this.serial = config["doorbird_serial"] || "4260423860001";
     this.model = config["doorbird_model"] || "D101";
+    this.cmdDoorbell = config["cmd_doorbell"];
+    this.cmdMotionsensor = config["cmd_motionsensor"];
     this.currentState = true;
     this.binaryState = 0;
     this.timeout = 2;
@@ -64,6 +67,19 @@ function DoorBird(log, config) {
                 self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
             }.bind(self), 10);
 
+            self.log(this.cmdDoorbell);
+            if (self.cmdDoorbell)
+            {
+               self.log("HTTP Server: executing '%s'", self.cmdDoorbell);
+               exec(self.cmdDoorbell, function(error, stdout, stderr) {
+                 // command output is in stdout
+                 if (error)
+                 {
+                    self.log(error);
+                 }
+               });
+            }
+
             setTimeout(function () {
                 self.log('DoorBird resetting doorbell')
                 self.doorbellService.getCharacteristic(Characteristic.MotionDetected).updateValue(false);
@@ -78,6 +94,18 @@ function DoorBird(log, config) {
             setTimeout(function () {
                 self.motionService.getCharacteristic(Characteristic.MotionDetected).updateValue(true);
             }.bind(self), 10);
+
+            if (self.cmdMotionsensor)
+            {
+               self.log("HTTP Server: executing '%s'", self.cmdMotionsensor);
+               exec(self.cmdMotionsensor, function(error, stdout, stderr) {
+                 // command output is in stdout
+                 if (error)
+                 {
+                    self.log(error);
+                 }
+               });
+            }
 
             setTimeout(function () {
                 self.log('DoorBird resetting motion')
