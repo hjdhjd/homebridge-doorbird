@@ -16,6 +16,8 @@
           "doorbird_password": "",
           "doorbird_model": "",
           "doorbird_serial": "",
+          "cmd_doorbell": "",
+          "cmd_motionsensor": "",
           "http_port": "8080"
         }
       ]
