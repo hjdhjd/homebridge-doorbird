@@ -17,7 +17,7 @@
           "cmd_doorbell": "",
           "cmd_motionsensor": "",
           "videoConfig": {
-            "source": "-re -i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
+            "source": "-re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp",
             "stillImageSource": "-i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
             "maxStreams": 2,
             "maxWidth": 1280,
