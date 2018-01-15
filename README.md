@@ -43,4 +43,5 @@ This is useful if you want Homebridge to talk to other home automation endpoints
 
 ## Credits
 https://github.com/Samfox2/homebridge-videodoorbell
+
 https://github.com/KhaosT/homebridge-camera-ffmpeg
