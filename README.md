@@ -4,6 +4,8 @@
 
 It provides; a camera stream using the [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg) project as a basis for this DoorBird Platform.  The doorbell is part of the camera as a service.  Motion sensor, lock mechanism and light service is all included. Activate notifications on the sensor(s) if you want iOS notifications pushed to your Home screen (requires a HomeKit Hub e.g. Apple TV or iPad for remote access).  You will see the Intercom on your DoorBird stream, however this is not supported in FFMpeg currently, it needs work.
 
+![Alt Text](https://github.com/brownad/homebridge-doorbird/blob/master/doorbird.gif)
+
 ## Installation
 
 If you are new to Homebridge, please first read the Homebridge [documentation](https://www.npmjs.com/package/homebridge).
