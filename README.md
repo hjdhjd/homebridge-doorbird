@@ -12,11 +12,13 @@ If you are new to Homebridge, please first read the Homebridge [documentation](h
 ```sh
 sudo npm install -g homebridge
 ```
-2 Install homebridge-doorbird:
+2 Install FFMpeg, and setup Google Drive (optional) as per  [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg)
+
+3 Install homebridge-doorbird:
 ```sh
 sudo npm install -g homebridge-doorbird
 ```
-3 Configure plugin:
+4 Configure plugin:
 ```
  Update your configuration file. See config.json in this repository for a sample. Swap xxx for IP or credentials, wherever appropriate.
 ```
