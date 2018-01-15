@@ -31,11 +31,11 @@ This uses the DoorBird notifications API, you must register your endpoint(s) lik
 
 * Doorbell
 ```sh
-wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=doorbell&subscribe=1&url=http://homebridge-ip:8080/doorbell.html'
+wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=doorbell&subscribe=1&url=http://homebridge-ip:5005/doorbell.html'
 ```
 * Motion sensor
 ```sh
-wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=motionsensor&subscribe=1&url=http://homebridge-ip:8080/motion.html'
+wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=motionsensor&subscribe=1&url=http://homebridge-ip:5005/motion.html'
 ```
 
 You can check your API registrations inside the DoorBird app itself, under Administration -> HTTP Calls.
