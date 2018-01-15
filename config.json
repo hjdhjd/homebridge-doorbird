@@ -8,20 +8,26 @@
   "platforms": [
     {
       "platform": "DoorBird",
-      "doorbird": [
+      "cameras": [
         {
           "name": "DoorBird",
           "doorbird_ip": "",
           "doorbird_username": "",
           "doorbird_password": "",
-          "doorbird_model": "",
-          "doorbird_serial": "",
           "cmd_doorbell": "",
           "cmd_motionsensor": "",
-          "http_port": "8080"
+          "videoConfig": {
+            "source": "-re -i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
+            "stillImageSource": "-i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
+            "maxStreams": 2,
+            "maxWidth": 1280,
+            "maxHeight": 720,
+            "maxFPS": 15,
+            "port": 5005
+          }
         }
-      ]
-    }
+       ]
+      }
   ],
   "accessories": [
 
