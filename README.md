@@ -25,6 +25,12 @@ sudo npm install -g homebridge-doorbird
  Update your configuration file. See config.json in this repository for a sample. Swap xxx for IP or credentials, wherever appropriate.
 ```
 
+Try either RTSP or MJPEG for your camera stream, stability and speed is variable between the two:
+
+`-re -f mjpeg -i http://xxxusername:xxxpassword@xxx.xxx.xxx/bha-api/video.cgi` 
+`-rtsp_transport tcp -re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp`
+
+
 ## Configuration
 
 Add the platform in [`config.json`](https://github.com/brownad/homebridge-doorbird/blob/master/config.json) in your home directory inside `.homebridge`.  
