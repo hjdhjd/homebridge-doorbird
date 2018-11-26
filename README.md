@@ -30,6 +30,8 @@ Try either RTSP or MJPEG for your camera stream, stability and speed is variable
 `-re -f mjpeg -i http://xxxusername:xxxpassword@xxx.xxx.xxx/bha-api/video.cgi` 
 `-rtsp_transport tcp -re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp`
 
+5. Add Accessory:
+Add DoorBird accessory in Home app. The setup code is the same as homebridge.  The device does not appear automatically in Home app.  It requires you to add the Accessory and onboard it.
 
 ## Configuration
 
