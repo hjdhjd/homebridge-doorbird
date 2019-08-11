@@ -87,7 +87,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function () {
             var webserverPort = videoConfig.port || 5005;
 
             if (!cameraName || !videoConfig) {
-                console.log("Missing parameters.");
+                self.log("Missing parameters.");
                 return;
             }
 
@@ -228,11 +228,11 @@ doorBirdPlatform.prototype.didFinishLaunching = function () {
             });
 
             server.listen(webserverPort, function () {
-                console.log(" %s is listening on port %s", cameraName, webserverPort);
+                self.log(" %s is listening on port %s", cameraName, webserverPort);
             }.bind(this));
 
 	          server.on('error', function (err) {
-                console.log(" %s Port %s Server %s ", cameraName, webserverPort, err);
+                self.log(" %s Port %s Server %s ", cameraName, webserverPort, err);
             }.bind(this));
         });
     }
@@ -247,9 +247,7 @@ doorBirdPlatform.prototype.setState = function (state, callback) {
     var lockState = (state == Characteristic.LockTargetState.SECURED) ? "lock" : "unlock";
     var update = (state == Characteristic.LockTargetState.SECURED) ? true : false;
     self = this;
-
-    console.log("DoorBird set state to ", lockState);
-    self = this;
+    self.log("DoorBird set state to ", lockState);
     self.currentState = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
 
     if (lockState == "unlock") {
@@ -261,7 +259,7 @@ doorBirdPlatform.prototype.setState = function (state, callback) {
                 //set state to unlocked
                 self.lockService
                     .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
-                console.log("DoorBird lock opened")
+                self.log("DoorBird lock opened")
 
                 if (!update) {
                     setTimeout(function () {
@@ -270,13 +268,13 @@ doorBirdPlatform.prototype.setState = function (state, callback) {
                             .setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED)
                             .setCharacteristic(Characteristic.LockCurrentState, self.currentState);
                         update = true;
-                        console.log("DoorBird auto lock initiated")
+                        self.log("DoorBird auto lock initiated")
                     }.bind(this), 4000);
                 }
             }
 
             else {
-                console.log("DoorBird error '%s' opening lock. Response: %s", err, body);
+                self.log("DoorBird error '%s' opening lock. Response: %s", err, body);
                 callback(err || new Error("DoorBird error setting lock state"));
             }
         });
