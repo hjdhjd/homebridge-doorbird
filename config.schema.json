@@ -30,7 +30,7 @@
                         "required": true
                     },
                     "doorbird_ip": {
-                        "title": "Door Bird IP",
+                        "title": "DoorBird IP",
                         "placeholder": "Enter Doorbird Video Station ip address",
                         "type": "string",
                         "required": true,
