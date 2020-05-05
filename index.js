@@ -159,7 +159,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function () {
 
             configuredAccessories.push(doorBirdAccessory);
 
-            self.api.publishCameraAccessories("DoorBird", configuredAccessories);
+            self.api.publishCameraAccessories("homebridge-doorbird", configuredAccessories);
 
             var server = http.createServer(function (req, res) {
               if (req.url == "/doorbell.html") {
