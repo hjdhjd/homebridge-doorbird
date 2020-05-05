@@ -53,6 +53,34 @@ You can check your API registrations inside the DoorBird app itself, under Admin
 If you want command line events to fire off on Doorbell and Motion Sensor, then add the call(s) in your `config.json` to the `cmd_doorbell` or `cmd_motionsensor`.
 This is useful if you want Homebridge to talk to other home automation endpoints, you can add a simple `wget -q foo`.
 
+* Relays and Devices
+
+The default relay for the plugin to lock/unlock is the first relay in the Video Door Station.
+
+Doorbird supports multiple relays in the door station itself and on the following optionally attached peripheral devices:
+- A1081 E/A Controller (https://www.doorbird.com/downloads/manual_a1081_en_de.pdf) - TESTED
+- A1101 Indoor Station (https://www.doorbird.com/downloads/datasheet/datasheet_a1101_en.pdf) - UNTESTED
+
+You may switch the lock/unlock functionality to any of the relays in either the door station, E/A controller or the indoor station (UNTESTED).
+
+Sample Config snippet for alternate relay:
+```
+"relay_no": "2"
+````
+
+Sample Config snippet for peripheral device:
+```
+"use_peripheral": true,
+"peripheral_name": "gggggg",
+"peripheral_relay_no": "1",
+```
+
+The name of the controller or station can be found in the App: 
+Administration > Peripherals > Device (6-letter word)
+
+_ToDo: expose additional relays and digital inputs in homekit_
+
+
 ## Credits
 https://github.com/Samfox2/homebridge-videodoorbell
 

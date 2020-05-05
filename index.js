@@ -81,7 +81,23 @@ doorBirdPlatform.prototype.didFinishLaunching = function () {
             self.cmdDoorbell = cameraConfig.cmd_doorbell;
             self.cmdMotionsensor = cameraConfig.cmd_motionsensor;
             self.light = '/bha-api/light-on.cgi?';
-            self.open = '/bha-api/open-door.cgi?';
+        
+            // special handling for lock/unlock relay other than default #1 
+            self.use_peripheral = cameraConfig.use_peripheral;
+            self.peripheral_name = cameraConfig.peripheral_name;
+            self.peripheral_relay_no = cameraConfig.peripheral_relay_no;
+            self.relay_no = cameraConfig.relay_no;
+
+            if (self.use_peripheral) {
+                self.log("Lock/Unlock via peripheral %s with relay %s", self.peripheral_name, self.peripheral_relay_no);
+                self.open = '/bha-api/open-door.cgi?r=' + self.peripheral_name + "@" + self.peripheral_relay_no;
+            } else if (self.relay_no) { // use another relay than the default
+                self.log("Lock/Unlock via relay %s in Doorbird", self.relay_no);
+                self.open = '/bha-api/open-door.cgi?r=+' + self.relay_no;
+            } else {
+                self.log("No peripheral or relay configured will use default: relay 1 in door station");
+                self.open = '/bha-api/open-door.cgi?';
+            }
 
             var videoConfig = cameraConfig.videoConfig;
             var webserverPort = videoConfig.port || 5005;
