@@ -146,7 +146,7 @@ FFMPEG.prototype.handleSnapshotRequest = function(request, callback) {
   let ffmpeg = spawn(this.videoProcessor, (imageSource + ' -t 1 -s '+ resolution + ' -f image2 -').split(' '), {env: process.env});
   var imageBuffer = Buffer(0);
   this.log("Snapshot from " + this.name + " at " + resolution);
-  if(this.debug) console.log('ffmpeg '+imageSource + ' -t 1 -s '+ resolution + ' -f image2 -');
+  if(this.debug) console.log(this.videoProcessor + ' ' + imageSource + ' -t 1 -s '+ resolution + ' -f image2 -');
   ffmpeg.stdout.on('data', function(data) {
     imageBuffer = Buffer.concat([imageBuffer, data]);
   });
@@ -256,7 +256,7 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         var asamplerate = 16;
         var vcodec = this.vcodec || 'libx264';
         var acodec = this.acodec || 'libfdk_aac';
-        var packetsize = this.packetsize || 1316; // 188 376
+        var packetsize = this.packetsize || 564; // Can be up to 1316 in multiples of 188.
         var additionalCommandline = this.additionalCommandline ;
 
         let videoInfo = request["video"];
@@ -308,7 +308,7 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
           '&pkt_size=' + packetsize;
 
         if(this.audio){
-          ffmpegCommand+= ' -map 0:1' +
+          ffmpegCommand+= ' -map 1:0' +
             ' -acodec ' + acodec +
             ' -profile:a aac_eld' +
             ' -flags +global_header' +
@@ -331,7 +331,7 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         let ffmpeg = spawn(this.videoProcessor, ffmpegCommand.split(' '), {env: process.env});
         this.log("Start streaming video from " + this.name + " with " + width + "x" + height + "@" + vbitrate + "kBit");
         if(this.debug){
-          console.log("ffmpeg " + ffmpegCommand);
+          console.log(this.videoProcessor + " " + ffmpegCommand);
         }
 
         // Always setup hook on stderr.
@@ -378,11 +378,6 @@ FFMPEG.prototype.createCameraControlService = function() {
   var controlService = new Service.CameraControl();
 
   this.services.push(controlService);
-
-  if(this.audio){
-    var microphoneService = new Service.Microphone();
-    this.services.push(microphoneService);
-  }
 }
 
 // Private
