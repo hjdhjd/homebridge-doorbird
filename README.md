@@ -2,7 +2,7 @@
 
 `homebridge-doorbird` is a plugin for Homebridge.  Giving you an integrated experience with your [DoorBird](https://www.doorbird.com) unit.
 
-It provides; a camera stream using the [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg) project as a basis for this DoorBird Platform.  The doorbell is part of the camera as a service.  Motion sensor, lock mechanism and light service is all included. Activate notifications on the sensor(s) if you want iOS notifications pushed to your Home screen (requires a HomeKit Hub e.g. Apple TV or iPad for remote access).  You will see the Intercom on your DoorBird stream, however this is not supported in FFMpeg currently, it needs work.
+It provides; a camera stream using the [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg) project as a basis for this DoorBird Platform.  The doorbell is part of the camera as a service.  Motion sensor, lock mechanism and light service is all included. Activate notifications on the sensor(s) if you want iOS notifications pushed to your Home screen (requires a HomeKit Hub e.g. Apple TV or iPad for remote access).  Basic audio recieve is supported in the intercom as a Speaker service.  Microphone is to be implemented.
 
 ![Alt Text](https://github.com/brownad/homebridge-doorbird/blob/master/doorbird.gif)
 
@@ -14,7 +14,7 @@ If you are new to Homebridge, please first read the Homebridge [documentation](h
 ```sh
 sudo npm install -g homebridge
 ```
-2 Install FFMpeg, and setup Google Drive (optional) as per  [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg)
+2 Install FFMpeg, and setup Google Drive (optional) as per  [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg), for Audio support you must have a compiled version of FFMpeg with fdk-aac support.
 
 3 Install homebridge-doorbird:
 ```sh
@@ -22,13 +22,20 @@ sudo npm install -g homebridge-doorbird
 ```
 4 Configure plugin:
 ```
- Update your configuration file. See config.json in this repository for a sample. Swap xxx for IP or credentials, wherever appropriate.
+ Update your configuration file. See config.json in this repository for a sample. Swap xxx for IP or credentials, wherever appropriate. 
 ```
 
-Try either RTSP or MJPEG for your camera stream, stability and speed is variable between the two:
+Use RTSP camera stream if you want to enable Audio:
+
+`-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi""source": "-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi`
+
+Along with setting:
+
+`"audio": true`
+
+If you want MJPEG and no Audio use: 
 
 `-re -f mjpeg -i http://xxxusername:xxxpassword@xxx.xxx.xxx/bha-api/video.cgi` 
-`-rtsp_transport tcp -re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp`
 
 5. Add Accessory:
 Add DoorBird accessory in Home app. The setup code is the same as homebridge.  The device does not appear automatically in Home app.  It requires you to add the Accessory and onboard it.
