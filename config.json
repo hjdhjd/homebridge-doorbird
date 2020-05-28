@@ -17,13 +17,14 @@
           "cmd_doorbell": "",
           "cmd_motionsensor": "",
           "videoConfig": {
-            "source": "-rtsp_transport tcp -re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp",
+            "source": "-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi""source": "-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi",
             "stillImageSource": "-i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
             "maxStreams": 2,
             "maxWidth": 1280,
             "maxHeight": 720,
             "maxFPS": 15,
-            "port": 5005
+            "port": 5005,
+            "audio" : true
           }
         }
        ]
