@@ -14,7 +14,7 @@ If you are new to Homebridge, please first read the Homebridge [documentation](h
 ```sh
 sudo npm install -g homebridge
 ```
-2 Install FFMpeg, and setup Google Drive (optional) as per  [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg)
+2 Install FFMpeg, and setup Google Drive (optional) as per  [FFMpeg plugin](https://github.com/KhaosT/homebridge-camera-ffmpeg), for Audio support you must have a compiled version of FFMpeg with fdk-aac support.
 
 3 Install homebridge-doorbird:
 ```sh
