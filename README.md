@@ -27,7 +27,7 @@ sudo npm install -g homebridge-doorbird
 
 Use RTSP camera stream if you want to enable Audio:
 
-`-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi""source": "-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi`
+`"source": "-re -rtsp_transport tcp -i rtsp://doorbirduser:doorbirdpass@doorbirdip:8557/mpeg/media.amp -f mulaw -ar 8000 -i http://doorbirduser:doorbirdpass@doorbirdip/bha-api/audio-receive.cgi`
 
 Along with setting:
 
