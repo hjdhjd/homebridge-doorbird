@@ -34,7 +34,7 @@ Add the platform in `config.json` in your home directory inside `.homebridge` an
     "platform": "DoorBird",
     "name": "Doorbird",
 
-    "controllers": [
+    "cameras": [
       {
         "doorbird": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
@@ -100,7 +100,7 @@ This step is not required. For those that prefer to tailor the defaults to their
     "port": 5005,
     "debug": no,
 
-    "controllers": [
+    "cameras": [
       {
         "doorbird": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
