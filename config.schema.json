@@ -29,70 +29,52 @@
                         "placeholder": "Enter Doorbird Video Station name...",
                         "required": true
                     },
-                    "doorbird_ip": {
+                    "doorbird": {
                         "title": "DoorBird IP",
                         "placeholder": "Enter Doorbird Video Station ip address",
                         "type": "string",
                         "required": true,
                         "format": "ipv4"
                     },
-                    "doorbird_username": {
+                    "username": {
                         "type": "string",
                         "placeholder": "Enter Doorbird Video Station username",
                         "required": true
                     },
-                    "doorbird_password": {
+                    "password": {
                         "type": "string",
                         "placeholder": "Enter Doorbird Video Station password",
                         "required": true
                     },
-                    "relay_no": {
+                    "relay": {
                         "title": "Relay No",
                         "placeholder": "Relay in video door station (1 or 2)",
                         "default": "1",
                         "type": "integer",
                         "minimum": 1
                     },
-                    "use_peripheral": {
-                        "title": "Activate to use lock/unlock relay on peripheral instead of relay in video door station",
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "peripheral_name": {
+                    "peripheralName": {
                         "title": "The name of the peripheral controller or station",
                         "placeholder": "gggggg",
                         "type": "string"
                     },
-                    "peripheral_relay_no": {
+                    "peripheralRelay": {
                         "title": "Relay no on device",
                         "placeholder": "Relay number in peripheral",
                         "default": "1",
                         "type": "integer",
                         "minimum": 1
                     },
-                    "cmd_doorbell": {
+                    "cmdDoorbell": {
                         "type": "string"
                     },
-                    "cmd_motionsensor": {
+                    "cmdMotion": {
                         "type": "string"
                     },
                     "videoConfig": {
                         "title": "Video Configuration",
                         "type": "object",
                         "properties": {
-                            "source": {
-                                "title": "Source",
-                                "type": "string",
-                                "default": "-rtsp_transport tcp -re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp",
-                                "placeholder": "-rtsp_transport tcp -re -i rtsp://xxxusername:xxxpassword@xxx.xxx.xxx:8557/mpeg/media.amp",
-                                "required": true
-                            },
-                            "stillImageSource": {
-                                "title": "Still Image Source",
-                                "default": "-i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
-                                "placeholder": "-i http://xxx.xxx.xxx.xxx:80/bha-api/image.cgi?http-user=xxx&http-password=xxx",
-                                "type": "string"
-                            },
                             "maxStreams": {
                                 "title": "Maximum Number of Streams",
                                 "type": "integer",
@@ -120,77 +102,19 @@
                                 "default": 15,
                                 "description": "The maximum frame rate of the stream"
                             },
-                            "maxBitrate": {
-                                "title": "Maximum Bitrate",
-                                "type": "integer",
-                                "placeholder": 300,
-                                "minimum": 1,
-                                "description": "The maximum bit rate of the stream"
-                            },
-                            "preserveRatio": {
-                                "title": "Preserve Ratio",
-                                "type": "string",
-                                "description": "Can be set to either 'W' or 'H' with respective obvious meanings.",
-                                "typeahead": {
-                                    "source": [
-                                        "W",
-                                        "H"
-                                    ]
-                                }
-                            },
-                            "vcodec": {
-                                "title": "Video Codec",
-                                "type": "string",
-                                "placeholder": "libx264",
-                                "description": "The ffmpeg video processing codec to use.",
-                                "typeahead": {
-                                    "source": [
-                                        "libx264",
-                                        "copy",
-                                        "h264_omx",
-                                        "h264",
-                                        "h264_mmal"
-                                    ]
-                                }
-                            },
                             "packetSize": {
                                 "title": "Packet Size",
                                 "type": "number",
                                 "placeholder": 1316,
                                 "multipleOf": 188.0
                             },
-                            "videoFilter": {
-                                "title": "Allows a custom video filter to be passed to FFmpeg via -vf",
-                                "type": "string",
-                                "placeholder": "scale=1280:720"
-                            },
                             "additionalCommandline": {
                                 "title": "Additional of extra command line options",
                                 "type": "string",
                                 "description": "Additional of extra command line options to use with FFmpeg, for example '-loglevel verbose'"
                             },
-                            "mapvideo": {
-                                "type": "string",
-                                "title": "Map Video",
-                                "placeholder": "0:0",
-                                "description": " Select the stream used for video"
-                            },
-                            "mapaudio": {
-                                "type": "string",
-                                "title": "Map Audio",
-                                "placeholder": "0:1",
-                                "description": " Select the stream used for audio"
-                            },
                             "audio": {
                                 "title": "Enable Audio (requires ffmpeg with libfdk-aac)",
-                                "type": "boolean"
-                            },
-                            "vflip": {
-                                "title": "Flip Stream Vertically",
-                                "type": "boolean"
-                            },
-                            "hflip": {
-                                "title": "Flip Stream Horizontally",
                                 "type": "boolean"
                             },
                             "debug": {
@@ -216,17 +140,14 @@
             "buttonText": "Add Video Door Station",
             "items": [
                 "cameras[].name",
-                "cameras[].doorbird_ip",
-                "cameras[].doorbird_username",
-                "cameras[].doorbird_password",
-                "cameras[].videoConfig.source",
-                "cameras[].videoConfig.stillImageSource",
-                "cameras[].relay_no",
-                "cameras[].use_peripheral",
-                "cameras[].peripheral_name",
-                "cameras[].peripheral_relay_no",
-                "cameras[].cmd_doorbell",
-                "cameras[].cmd_motion",
+                "cameras[].doorbird",
+                "cameras[].username",
+                "cameras[].password",
+                "cameras[].relay",
+                "cameras[].peripheralName",
+                "cameras[].peripheralRelay",
+                "cameras[].cmdDoorbell",
+                "cameras[].cmdMotion",
                 "cameras[].videoConfig.port",
                 {
                     "key": "cameras[].videoConfig",
@@ -239,15 +160,8 @@
                         "cameras[].videoConfig.maxWidth",
                         "cameras[].videoConfig.maxHeight",
                         "cameras[].videoConfig.maxFPS",
-                        "cameras[].videoConfig.maxBitrate",
-                        "cameras[].videoConfig.preserveRatio",
                         "cameras[].videoConfig.packetSize",
-                        "cameras[].videoConfig.videoFilter",
-                        "cameras[].videoConfig.additionalCommandline",
-                        "cameras[].videoConfig.mapvideo",
-                        "cameras[].videoConfig.mapaudio",
-                        "cameras[].videoConfig.vflip",
-                        "cameras[].videoConfig.hflip"
+                        "cameras[].videoConfig.additionalCommandline"
                     ]
                 }
             ]
