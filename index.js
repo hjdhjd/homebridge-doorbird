@@ -81,8 +81,8 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
       self.ip = cameraConfig.doorbird;
       self.username = cameraConfig.username;
       self.password = cameraConfig.password;
-      self.cmdDoorbell = cameraConfig.doorbell;
-      self.cmdMotion = cameraConfig.motionsensor;
+      self.cmdDoorbell = cameraConfig.cmdDoorbell;
+      self.cmdMotion = cameraConfig.cmdMotion;
       self.peripheral = cameraConfig.peripheral;
       self.peripheralRelay = cameraConfig.peripheralRelay;
       self.relay = cameraConfig.relay;
@@ -116,8 +116,8 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
       self.lockUrl = 'http://' + self.doorBirdAuth + self.open;
      
       // Let's configure reasonable defaults for Doorbird.
-      var videoConfig = cameraConfig.videoConfig;
-      var webserverPort = cameraConfig.port || 5005;
+      var videoConfig = self.config.videoConfig;
+      var webserverPort = self.config.port || 5005;
 
       var source = '-re -rtsp_transport tcp -i rtsp://' + self.doorBirdAuth + ':8557/mpeg/media.amp';
       var stillImageSource = '-i http://' + self.doorBirdAuth + '/bha-api/image.cgi';
@@ -153,23 +153,23 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
           additionalCommandline = videoConfig.additionalCommandline;
         }
 
-        if(!videoConfig.maxStreams) {
+        if(videoConfig.maxStreams) {
           maxStreams = videoConfig.maxStreams;
         }
 
-        if(!videoConfig.maxWidth) {
+        if(videoConfig.maxWidth) {
           maxWidth = videoConfig.maxWidth;
         }
 
-        if(!videoConfig.maxHeight) {
+        if(videoConfig.maxHeight) {
           maxHeight = videoConfig.maxHeight;
         }
 
-        if(!videoConfig.maxFPS) {
+        if(videoConfig.maxFPS) {
           maxFPS = videoConfig.maxFPS;
         }
 
-        if(!videoConfig.packetSize) {
+        if(videoConfig.packetSize) {
           packetSize = videoConfig.packetSize;
         }
       }
