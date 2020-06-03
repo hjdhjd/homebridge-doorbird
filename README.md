@@ -98,7 +98,7 @@ This step is not required. For those that prefer to tailor the defaults to their
     "platform": "Doorbird",
     "name": "Doorbird",
     "videoProcessor": "/usr/local/bin/ffmpeg",
-    "debug": no,
+    "debug": false,
 
     "cameras": [
       {
@@ -116,11 +116,11 @@ This step is not required. For those that prefer to tailor the defaults to their
     
     "videoConfig": {
       "additionalCommandline": "-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0",
+      "packetSize": 376,
       "maxStreams": 4,
       "maxWidth": 1280,
       "maxHeight": 720,
-      "maxFPS": 15,
-      "packetSize": 376
+      "maxFPS": 15
     }
   }
 ]
@@ -133,27 +133,32 @@ Platform-level configuration parameters:
 | platform               | Must always be `Doorbird`.                              |                                                                                       | Yes      |
 | name                   | Name to use for the Doorbird platform.                  |                                                                                       | No       |
 | videoProcessor         | Specify path of ffmpeg or avconv.                       | "ffmpeg"                                                                              | No       |
-| debug                  | Enable additional debug logging.                        | no                                                                                    | No       |
+| debug                  | Enable additional debug logging.                        | false                                                                                 | No       |
 
-Camera-level configuration parameters:
+`cameras` configuration parameters:
 
 | Fields                 | Description                                             | Default                                                                               | Required |
 |------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------|----------|
+| name                   | Name to use for this Doorbird.                          |                                                                                       | No       |
 | doorbird               | IP address of your Doorbird                             |                                                                                       | Yes      |
 | username               | Your Doorbird username.                                 |                                                                                       | Yes      |
 | password               | Your Doorbird password.                                 |                                                                                       | Yes      |
-| name                   | Name to use for this Doorbird.                          |                                                                                       | No       |
-| audio                  | Enable audio support for Doorbird.                      | no                                                                                    | No       |
+| audio                  | Enable audio support for Doorbird.                      | false                                                                                 | No       |
+| defaultRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
-| defaultRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
+| port                   | Port to use for the plugin webserver for notifications. | 5005                                                                                  | No       |
+
+`videoConfig` configuration parameters:
+
+| Fields                 | Description                                             | Default                                                                               | Required |
+|------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------|----------|
 | additionalCommandline  | Additional parameters to pass ffmpeg to render video.   | "-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0"      | No       |
 | packetSize             | Packet size for the camera stream in multiples of 188.  | 376                                                                                   | No       |
 | maxStreams             | Maximum number of streams allowed for a camera.         | 4                                                                                     | No       |
 | maxWidth               | Maximum width of a video stream allowed.                | 1280                                                                                  | No       |
 | maxHeight              | Maximum height of a video stream allowed.               | 720                                                                                   | No       |
 | maxFPS                 | Maximum framerate for a video stream.                   | 15                                                                                    | No       |
-| port                   | Port to use for the plugin webserver for notifications. | 5005                                                                                  | No       |
 
 ## Credits
 * [homebridge-videodoorbell](https://github.com/Samfox2/homebridge-videodoorbell)
