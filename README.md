@@ -5,7 +5,7 @@
 It provides the HomeKit video doorbell service which includes a camera, lock, motion sensor, and infrared light service, using the excellent [homebridge-camera-ffmpeg](https://github/KhaosT/homebridge-camera-ffmpeg) as a foundation.
 
 ## Requirements and Limitations
-* Audio requires an installation of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support. This plugin uses [ffmpeg-for-homebridge](https://github.com/homebridge/ffmpeg-for-homebridge) to streamline this for some of the more common operating systems. Check the `ffmpeg-for-homebridge` for details on supported operating systems. If your operating system isn't support, you'll need to compile your own. Instructions are beyond the scope of this plugin.
+* Audio requires an installation of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support. This plugin uses [ffmpeg-for-homebridge](https://github.com/homebridge/ffmpeg-for-homebridge) to streamline this for some of the more common operating systems. Check the `ffmpeg-for-homebridge` for details on supported operating systems. If your operating system isn't supported, you'll need to compile your own. Instructions are beyond the scope of this plugin.
 
 * Two-way audio is not currently supported. Currently, you can hear audio but the microphone capability is yet to be implemented.
 
@@ -43,6 +43,14 @@ Add the platform in `config.json` in your home directory inside `.homebridge` an
   }
 ]
 ```
+
+After restarting Homebridge, the DoorBird will need to be manually paired in the Home app, to do this:
+
+1. Open the Home <img src="https://user-images.githubusercontent.com/3979615/78010622-4ea1d380-738e-11ea-8a17-e6a465eeec35.png" height="16.42px"> app on your device.
+2. Tap the Home tab, then tap <img src="https://user-images.githubusercontent.com/3979615/78010869-9aed1380-738e-11ea-9644-9f46b3633026.png" height="16.42px">.
+3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*.
+4. Select the DoorBird for pairing.
+5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use DoorBird* and scan the QR code again.
 
 ### Doorbird notification configuration
 In order for the plugin to receive notifications from Doorbird, you need to configure the Doorbird to notify `homebridge-doorbird`.
