@@ -98,7 +98,6 @@ This step is not required. For those that prefer to tailor the defaults to their
     "platform": "Doorbird",
     "name": "Doorbird",
     "videoProcessor": "/usr/local/bin/ffmpeg",
-    "port": 5005,
     "debug": no,
 
     "cameras": [
@@ -108,17 +107,18 @@ This step is not required. For those that prefer to tailor the defaults to their
         "username": "some-doorbird-user (or create a new one just for homebridge)",
         "password": "some-doorbird-password",
         "audio": true,
+        "defaultRelay": "1",
         "cmdDoorbell": "/some/doorbell/script",
         "cmdMotion": "/some/motion/script",
-        "defaultRelay": 1
+        "port": 5005
       }
     ],
     
     "videoConfig": {
       "additionalCommandline": "-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0",
-      "maxStreams": 4
-      "maxWidth": 1280
-      "maxHeight": 720
+      "maxStreams": 4,
+      "maxWidth": 1280,
+      "maxHeight": 720,
       "maxFPS": 15,
       "packetSize": 376
     }
@@ -131,9 +131,8 @@ Platform-level configuration parameters:
 | Fields                 | Description                                             | Default                                                                               | Required |
 |------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------|----------|
 | platform               | Must always be `Doorbird`.                              |                                                                                       | Yes      |
-| name                   | For logging purposes.                                   |                                                                                       | No       |
+| name                   | Name to use for the Doorbird platform.                  |                                                                                       | No       |
 | videoProcessor         | Specify path of ffmpeg or avconv.                       | "ffmpeg"                                                                              | No       |
-| port                   | Port to use for the plugin webserver for notifications. | 5005                                                                                  | No       |
 | debug                  | Enable additional debug logging.                        | no                                                                                    | No       |
 
 Camera-level configuration parameters:
@@ -143,16 +142,18 @@ Camera-level configuration parameters:
 | doorbird               | IP address of your Doorbird                             |                                                                                       | Yes      |
 | username               | Your Doorbird username.                                 |                                                                                       | Yes      |
 | password               | Your Doorbird password.                                 |                                                                                       | Yes      |
+| name                   | Name to use for this Doorbird.                          |                                                                                       | No       |
+| audio                  | Enable audio support for Doorbird.                      | no                                                                                    | No       |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
-| defaultRelay           | Default relay to use for doorbell lock events.          | 1                                                                                     | No       |
+| defaultRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
 | additionalCommandline  | Additional parameters to pass ffmpeg to render video.   | "-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0"      | No       |
+| packetSize             | Packet size for the camera stream in multiples of 188.  | 376                                                                                   | No       |
 | maxStreams             | Maximum number of streams allowed for a camera.         | 4                                                                                     | No       |
 | maxWidth               | Maximum width of a video stream allowed.                | 1280                                                                                  | No       |
 | maxHeight              | Maximum height of a video stream allowed.               | 720                                                                                   | No       |
 | maxFPS                 | Maximum framerate for a video stream.                   | 15                                                                                    | No       |
-| packetSize             | Packet size for the camera stream in multiples of 188.  | 376                                                                                   | No       |
-| audio                  | Enable audio support for Doorbird.                      | no                                                                                    | No       |
+| port                   | Port to use for the plugin webserver for notifications. | 5005                                                                                  | No       |
 
 ## Credits
 * [homebridge-videodoorbell](https://github.com/Samfox2/homebridge-videodoorbell)

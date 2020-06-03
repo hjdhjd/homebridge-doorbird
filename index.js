@@ -109,7 +109,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
 
       // Let's configure reasonable defaults for Doorbird.
       var videoConfig = self.config.videoConfig;
-      var webserverPort = self.config.port || 5005;
+      var webserverPort = cameraConfig.port || 5005;
 
       var source = '-re -rtsp_transport tcp -i rtsp://' + self.doorBirdAuth + ':8557/mpeg/media.amp';
       var stillImageSource = '-i http://' + self.doorBirdAuth + '/bha-api/image.cgi';
