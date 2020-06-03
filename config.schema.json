@@ -53,6 +53,11 @@
                         "required": true
                     },
                     
+                    "audio": {
+                        "title": "Enable Audio (requires ffmpeg with libfdk-aac)",
+                        "type": "boolean"
+                    },
+                            
                     "cmdDoorbell": {
                         "title": "Command line to execute when a doorbell event is detected.",
                         "type": "string"
@@ -123,11 +128,6 @@
                                 "description": "Additional command line options to use with FFmpeg, for example '-loglevel verbose'"
                             },
                             
-                            "audio": {
-                                "title": "Enable Audio (requires ffmpeg with libfdk-aac)",
-                                "type": "boolean"
-                            },
-                            
                             "debug": {
                                 "title": "Enable Debug Mode",
                                 "type": "boolean"
@@ -150,7 +150,7 @@
                 "cameras[].doorbird",
                 "cameras[].username",
                 "cameras[].password",
-                "cameras[].videoConfig.audio",
+                "cameras[].audio",
                 "cameras[].defaultRelay",
                 "cameras[].cmdDoorbell",
                 "cameras[].cmdMotion",
