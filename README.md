@@ -5,11 +5,9 @@
 It provides the HomeKit video doorbell service which includes a camera, lock, motion sensor, and infrared light service, using the excellent [homebridge-camera-ffmpeg](https://github/KhaosT/homebridge-camera-ffmpeg) as a foundation.
 
 ## Requirements and Limitations
-* Audio requires an installation of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support. This plugin uses [ffmpeg-for-homebridge](https://github.com/homebridge/ffmpeg-for-homebridge) to streamline this for some of the more common operating systems. Check the `ffmpeg-for-homebridge` for details on supported operating systems. If your operating system isn't supported, you'll need to compile your own. Instructions are beyond the scope of this plugin.
+* Audio requires an installation of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support. This plugin uses [ffmpeg-for-homebridge](https://github.com/homebridge/ffmpeg-for-homebridge) to streamline this for some of the more common operating systems. Check the `ffmpeg-for-homebridge` for details on supported operating systems. If your operating system isn't support, you'll need to compile your own. Instructions are beyond the scope of this plugin.
 
 * Two-way audio is not currently supported. Currently, you can hear audio but the microphone capability is yet to be implemented.
-
-* Additional relays and digital inputs are not currently exposed in this plugin, though you can trigger alternative relays (see below).
 
 ## Installation
 
@@ -30,26 +28,26 @@ Add the platform in `config.json` in your home directory inside `.homebridge` an
 
 ```js
 "platforms": [
-   {
-     "platform": "DoorBird",
-     "name": "Doorbird",
-     "cameras": [
-     {
-       "name": "DoorBird",
-       "doorbird": "xxx",
-       "username": "xxx",
-       "password": "xxx",
-       "audio": true
-     }
+  {
+    "platform": "Doorbird",
+
+    "cameras": [
+      {
+        "name": "Doorbird 1",
+        "doorbird": "your.doorbird.ip",
+        "username": "some-doorbird-user (or create a new one just for homebridge)",
+        "password": "some-doorbird-password",
+        "audio": true
+      }
     ]
-  },
+  }
 ]
 ```
 
 ### Doorbird notification configuration
 In order for the plugin to receive notifications from Doorbird, you need to configure the Doorbird to notify `homebridge-doorbird`.
 
-* Doorbell notifications
+#### Doorbell notifications
 ```sh
 wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=doorbell&subscribe=1&url=http://homebridge-ip:5005/doorbell.html'
 ```
@@ -59,30 +57,33 @@ wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password
 wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=motionsensor&subscribe=1&url=http://homebridge-ip:5005/motion.html'
 ```
 
-You can check your API registrations inside the DoorBird app itself, under Administration > HTTP Calls.
+You can check your API registrations inside the Doorbird app itself, under Administration > HTTP Calls.
 
 Additionally, if you would like to configure command line scripts or commands to execute when motion or doorbell events are triggered, you can configure the `cmdDoorbell` and `cmdMotion`, respectively.
 
-* Relays and peripheral devices
+### Relays and peripheral devices
 
-The default relay for this plugin is to lock or unlock the first relay in the Doorbird. This is typically a door strike that unlocks a gate or door.
+The default for this plugin is to lock or unlock the first relay (relay 1) in the Doorbird. This is typically a door strike that unlocks a gate or door.
 
-However, there is support for multiple relays available on some Doorbird devices and on the following optionally attached peripheral devices:
+Support for multiple relays is available on some Doorbird devices and on the following optionally attached peripheral devices:
 
 * A1081 E/A Controller (https://www.doorbird.com/downloads/manual_a1081_en_de.pdf) - TESTED
 * A1101 Indoor Station (https://www.doorbird.com/downloads/datasheet/datasheet_a1101_en.pdf) - UNTESTED
 
-You may switch the lock functionality to any of the relays on Doorbird devices or peripherals using the `relay` configuration parameter.
+All relays found on the Doorbird, including peripherals, will be made available in HomeKit and the Home app.
 
-Example configuration for an alternate relay:
+You may switch the default relay using the `defaultRelay` configuration parameter. 
+To identify the relay names to use, review the homebridge log and look for log entries beginning with `Detected relay: xxxx` to identify the relay you wish to use by default. 
+In the previous example, you would use `"defaultRelay": "xxxx"` to set `xxxx` as the default relay to unlock.
+
+Example configuration for an alternate relay as the default:
 ```js
-"relay": "2"
+"defaultRelay": "2"
 ```
 
-Example configuration for peripheral device:
+Another example configuration using a relay on a peripheral device:
 ```js
-"peripheral": "gggggg",
-"peripheralRelay": "1",
+"defaultRelay": "gggggg@1"
 ```
 
 The name of the controller or station can be found in the App: 
@@ -94,7 +95,7 @@ This step is not required. For those that prefer to tailor the defaults to their
 ```js
 "platforms": [
   {
-    "platform": "DoorBird",
+    "platform": "Doorbird",
     "name": "Doorbird",
     "videoProcessor": "/usr/local/bin/ffmpeg",
     "port": 5005,
@@ -102,13 +103,14 @@ This step is not required. For those that prefer to tailor the defaults to their
 
     "cameras": [
       {
+        "name": "My Doorbird",
         "doorbird": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
         "password": "some-doorbird-password",
-        "audio": "true",
+        "audio": true,
         "cmdDoorbell": "/some/doorbell/script",
         "cmdMotion": "/some/motion/script",
-        "relay": 1
+        "defaultRelay": 1
       }
     ],
     
@@ -124,21 +126,26 @@ This step is not required. For those that prefer to tailor the defaults to their
 ]
 ```
 
+Platform-level configuration parameters:
+
 | Fields                 | Description                                             | Default                                                                               | Required |
 |------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------|----------|
-| platform               | Must always be `DoorBird`.                              |                                                                                       | Yes      |
+| platform               | Must always be `Doorbird`.                              |                                                                                       | Yes      |
 | name                   | For logging purposes.                                   |                                                                                       | No       |
 | videoProcessor         | Specify path of ffmpeg or avconv.                       | "ffmpeg"                                                                              | No       |
 | port                   | Port to use for the plugin webserver for notifications. | 5005                                                                                  | No       |
 | debug                  | Enable additional debug logging.                        | no                                                                                    | No       |
+
+Camera-level configuration parameters:
+
+| Fields                 | Description                                             | Default                                                                               | Required |
+|------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------|----------|
 | doorbird               | IP address of your Doorbird                             |                                                                                       | Yes      |
 | username               | Your Doorbird username.                                 |                                                                                       | Yes      |
 | password               | Your Doorbird password.                                 |                                                                                       | Yes      |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
-| relay                  | Alternate relay to use for lock events.                 |                                                                                       | No       |
-| peripheral             | Alternate peripheral name to use for lock events.       |                                                                                       | No       |
-| peripheralRelay        | Alternate peripheral relay to use for lock events. (must be used with peripheral) |                                                             | No       |
+| defaultRelay           | Default relay to use for doorbell lock events.          | 1                                                                                     | No       |
 | additionalCommandline  | Additional parameters to pass ffmpeg to render video.   | "-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0"      | No       |
 | maxStreams             | Maximum number of streams allowed for a camera.         | 4                                                                                     | No       |
 | maxWidth               | Maximum width of a video stream allowed.                | 1280                                                                                  | No       |

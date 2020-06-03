@@ -1,6 +1,6 @@
 {
   "name": "homebridge-doorbird",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "DoorBird plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
@@ -24,6 +24,7 @@
     "child_process": "^1.0.2",
     "http": "0.0.0",
     "request": "2.88.0",
+    "request-promise": "^4.2.4",
     "google-auth-library": "^0.10.0",
     "googleapis": "^18.0.0",
     "ip": "^1.1.3",
