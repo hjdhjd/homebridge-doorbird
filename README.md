@@ -1,6 +1,6 @@
 # homebridge-doorbird
 
-`homebridge-doorbird` is a plugin for Homebridge.  Giving you an integrated experience with your [Doorbird](https://www.doorbird.com) Door Station.
+`homebridge-doorbird` is a plugin for Homebridge.  Giving you an integrated experience with your [Doorbird](https://www.doorbird.com) devices.
 
 It provides the HomeKit video doorbell service which includes a camera, lock, motion sensor, and infrared light service, using the excellent [homebridge-camera-ffmpeg](https://github/KhaosT/homebridge-camera-ffmpeg) as a foundation.
 
@@ -30,14 +30,14 @@ Add the platform in `config.json` in your home directory inside `.homebridge` an
 "platforms": [
   {
     "platform": "Doorbird",
+    "audio": true
 
-    "cameras": [
+    "doorbirds": [
       {
         "name": "Doorbird 1",
-        "doorbird": "your.doorbird.ip",
+        "ip": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
         "password": "some-doorbird-password",
-        "audio": true
       }
     ]
   }
@@ -53,21 +53,11 @@ After restarting Homebridge, the DoorBird will need to be manually paired in the
 5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use DoorBird* and scan the QR code again.
 
 ### Doorbird notification configuration
-In order for the plugin to receive notifications from Doorbird, you need to configure the Doorbird to notify `homebridge-doorbird`.
+Versions of `homebird-doorbird` prior to 0.3.0 required additional configuration in order to get notifications from Doorbird devices. Starting with 0.3.0, `homebridge-doorbird` uses the Doorbird monitoring API and no additional configuration is needed. If you previously configured notifications to Homebridge in the Doorbird, you can safely remove them by using the Doorbird app and navigating to Administration -> HTTP Calls and deleting the entries related to Homebridge.
 
-#### Doorbell notifications
-```sh
-wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=doorbell&subscribe=1&url=http://homebridge-ip:5005/doorbell.html'
-```
 
-* Motion sensor notifications
-```sh
-wget -q 'http://doorbird-ip/bha-api/notification.cgi?http-user=XXX&http-password=XXX&event=motionsensor&subscribe=1&url=http://homebridge-ip:5005/motion.html'
-```
-
-You can check your API registrations inside the Doorbird app itself, under Administration > HTTP Calls.
-
-Additionally, if you would like to configure command line scripts or commands to execute when motion or doorbell events are triggered, you can configure the `cmdDoorbell` and `cmdMotion`, respectively.
+#### Command line scripts.
+If you would like to configure a command line to execute when motion or doorbell events are triggered, you can configure the `cmdDoorbell` and `cmdMotion`, respectively.
 
 ### Relays and peripheral devices
 
@@ -106,19 +96,17 @@ This step is not required. For those that prefer to tailor the defaults to their
     "platform": "Doorbird",
     "name": "Doorbird",
     "videoProcessor": "/usr/local/bin/ffmpeg",
-    "debug": false,
+    "audio": true,
 
-    "cameras": [
+    "doorbirds": [
       {
         "name": "My Doorbird",
-        "doorbird": "your.doorbird.ip",
+        "ip": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
         "password": "some-doorbird-password",
-        "audio": true,
         "defaultRelay": "1",
         "cmdDoorbell": "/some/doorbell/script",
-        "cmdMotion": "/some/motion/script",
-        "port": 5005
+        "cmdMotion": "/some/motion/script"
       }
     ],
     
@@ -141,21 +129,20 @@ Platform-level configuration parameters:
 | platform               | Must always be `Doorbird`.                              |                                                                                       | Yes      |
 | name                   | Name to use for the Doorbird platform.                  |                                                                                       | No       |
 | videoProcessor         | Specify path of ffmpeg or avconv.                       | "ffmpeg"                                                                              | No       |
-| debug                  | Enable additional debug logging.                        | false                                                                                 | No       |
+| audio                  | Enable audio support.                                   | false                                                                                 | No       |
+| debug                  | Enable debug logging.                                   | false                                                                                 | No       |
 
-`cameras` configuration parameters:
+`doorbirds` configuration parameters:
 
 | Fields                 | Description                                             | Default                                                                               | Required |
 |------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------|----------|
 | name                   | Name to use for this Doorbird.                          |                                                                                       | No       |
-| doorbird               | IP address of your Doorbird                             |                                                                                       | Yes      |
+| ip                     | IP address of your Doorbird                             |                                                                                       | Yes      |
 | username               | Your Doorbird username.                                 |                                                                                       | Yes      |
 | password               | Your Doorbird password.                                 |                                                                                       | Yes      |
-| audio                  | Enable audio support for Doorbird.                      | false                                                                                 | No       |
 | defaultRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
-| port                   | Port to use for the plugin webserver for notifications. | 5005                                                                                  | No       |
 
 `videoConfig` configuration parameters:
 
@@ -167,6 +154,11 @@ Platform-level configuration parameters:
 | maxWidth               | Maximum width of a video stream allowed.                | 1280                                                                                  | No       |
 | maxHeight              | Maximum height of a video stream allowed.               | 720                                                                                   | No       |
 | maxFPS                 | Maximum framerate for a video stream.                   | 15                                                                                    | No       |
+| source                 | Packet size for the camera stream in multiples of 188.  | autogenerated for Doorbirds                                                           | No       |
+| stillImageSource       | Packet size for the camera stream in multiples of 188.  | autogenerated for Doorbirds                                                           | No       |
+| mapaudio               | Mapping of audio channels for ffmpeg.                   | "1:0"                                                                                 | No       |
+| mapvideo               | Mapping of video channels for ffmpeg.                   | "0:0"                                                                                 | No       |
+| debug                  | Enable ffmpeg debugging for this Doorbird.              | 15                                                                                    | No       |
 
 ## Credits
 * [homebridge-videodoorbell](https://github.com/Samfox2/homebridge-videodoorbell)
