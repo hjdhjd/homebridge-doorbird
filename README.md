@@ -70,18 +70,18 @@ Support for multiple relays is available on some Doorbird devices and on the fol
 
 All relays found on the Doorbird, including peripherals, will be made available in HomeKit and the Home app.
 
-You may switch the default relay using the `defaultRelay` configuration parameter. 
+You may switch the default relay using the `primaryRelay` configuration parameter. 
 To identify the relay names to use, review the homebridge log and look for log entries beginning with `Detected relay: xxxx` to identify the relay you wish to use by default. 
-In the previous example, you would use `"defaultRelay": "xxxx"` to set `xxxx` as the default relay to unlock.
+In the previous example, you would use `"primaryRelay": "xxxx"` to set `xxxx` as the default relay to unlock.
 
 Example configuration for an alternate relay as the default:
 ```js
-"defaultRelay": "2"
+"primaryRelay": "2"
 ```
 
 Another example configuration using a relay on a peripheral device:
 ```js
-"defaultRelay": "gggggg@1"
+"primaryRelay": "gggggg@1"
 ```
 
 The name of the controller or station can be found in the App: 
@@ -104,7 +104,7 @@ This step is not required. For those that prefer to tailor the defaults to their
         "ip": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
         "password": "some-doorbird-password",
-        "defaultRelay": "1",
+        "primaryRelay": "1",
         "cmdDoorbell": "/some/doorbell/script",
         "cmdMotion": "/some/motion/script"
       }
@@ -140,7 +140,7 @@ Platform-level configuration parameters:
 | ip                     | IP address of your Doorbird                             |                                                                                       | Yes      |
 | username               | Your Doorbird username.                                 |                                                                                       | Yes      |
 | password               | Your Doorbird password.                                 |                                                                                       | Yes      |
-| defaultRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
+| primaryRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
 
