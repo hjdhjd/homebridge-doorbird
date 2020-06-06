@@ -71,7 +71,7 @@ Support for multiple relays is available on some Doorbird devices and on the fol
 All relays found on the Doorbird, including peripherals, will be made available in HomeKit and the Home app.
 
 You may switch the default relay using the `primaryRelay` configuration parameter. 
-To identify the relay names to use, review the homebridge log and look for log entries beginning with `Detected relay: xxxx` to identify the relay you wish to use by default. 
+To identify the relay names to use, review the homebridge log and look for log entries beginning with `detected relay: xxxx` to identify the relay you wish to use by default. 
 In the previous example, you would use `"primaryRelay": "xxxx"` to set `xxxx` as the default relay to unlock.
 
 Example configuration for an alternate relay as the default:
