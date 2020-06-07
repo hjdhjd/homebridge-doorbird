@@ -1,6 +1,6 @@
 # homebridge-doorbird
 
-`homebridge-doorbird` is a plugin for Homebridge.  Giving you an integrated experience with your [Doorbird](https://www.doorbird.com) devices.
+`homebridge-doorbird` is a plugin for Homebridge intended to give you an integrated experience with your [Doorbird](https://www.doorbird.com) devices.
 
 It provides the HomeKit video doorbell service which includes a camera, lock, motion sensor, and infrared light service, using the excellent [homebridge-camera-ffmpeg](https://github/KhaosT/homebridge-camera-ffmpeg) as a foundation.
 
