@@ -37,7 +37,7 @@ Add the platform in `config.json` in your home directory inside `.homebridge` an
         "name": "Doorbird 1",
         "ip": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
-        "password": "some-doorbird-password",
+        "password": "some-doorbird-password"
       }
     ]
   }
