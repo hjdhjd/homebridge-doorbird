@@ -30,7 +30,7 @@ Add the platform in `config.json` in your home directory inside `.homebridge` an
 "platforms": [
   {
     "platform": "Doorbird",
-    "audio": true
+    "audio": true,
 
     "doorbirds": [
       {
