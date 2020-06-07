@@ -5,7 +5,7 @@
 It provides the HomeKit video doorbell service which includes a camera, lock, motion sensor, and infrared light service, using the excellent [homebridge-camera-ffmpeg](https://github/KhaosT/homebridge-camera-ffmpeg) as a foundation.
 
 ## Requirements and Limitations
-* Audio requires an installation of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support. This plugin uses [ffmpeg-for-homebridge](https://github.com/homebridge/ffmpeg-for-homebridge) to streamline this for some of the more common operating systems. Check the `ffmpeg-for-homebridge` for details on supported operating systems. If your operating system isn't supported, you'll need to compile your own. Instructions are beyond the scope of this plugin.
+* Audio requires a version of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support. This plugin uses [ffmpeg-for-homebridge](https://github.com/homebridge/ffmpeg-for-homebridge) to streamline this for some of the more common operating systems. Check the `ffmpeg-for-homebridge` for details on supported operating systems. If your operating system isn't supported, you'll need to compile your own. Instructions are beyond the scope of this plugin.
 
 * Two-way audio is not currently supported. Currently, you can hear audio but the microphone capability is yet to be implemented.
 
