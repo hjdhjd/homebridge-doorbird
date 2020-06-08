@@ -142,7 +142,7 @@ Platform-level configuration parameters:
 | platform               | Must always be `Doorbird`.                              |                                                                                       | Yes      |
 | name                   | Name to use for the Doorbird platform.                  |                                                                                       | No       |
 | videoProcessor         | Specify path of ffmpeg or avconv.                       | "ffmpeg"                                                                              | No       |
-| options                | Configure plugin [feature options](#feature-options)).  |                                                                                       | No       |
+| options                | Configure plugin [feature options](#feature-options).   |                                                                                       | No       |
 | debug                  | Enable debug logging.                                   | false                                                                                 | No       |
 
 `doorbirds` configuration parameters:
@@ -156,7 +156,7 @@ Platform-level configuration parameters:
 | primaryRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
-| options                | Configure [feature options](#feature-options)) for this Doorbird.   |                                                                                       | No       |
+| options                | Configure [feature options](#feature-options) for this Doorbird.   |                                                                                       | No       |
 
 `videoConfig` configuration parameters:
 
