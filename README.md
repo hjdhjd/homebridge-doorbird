@@ -24,20 +24,21 @@ sudo npm install -g --unsafe-perm homebridge-doorbird
 ```
 
 ## Plugin configuration
-Add the platform in `config.json` in your home directory inside `.homebridge` and edit the required fields. If you want audio support, make sure to set `audio` to `true`.
+Add the platform in `config.json` in your home directory inside `.homebridge` and edit the required fields. If you want audio support, make sure to enable the feature option `Audio.Enable` in `options`.
 
 ```js
 "platforms": [
   {
     "platform": "Doorbird",
-    "audio": true,
+    "options": [ "Audio.Enable" ],
 
     "doorbirds": [
       {
         "name": "Doorbird 1",
         "ip": "your.doorbird.ip",
         "username": "some-doorbird-user (or create a new one just for homebridge)",
-        "password": "some-doorbird-password"
+        "password": "some-doorbird-password",
+        "options": [ "Relay.Hide.2" ]
       }
     ]
   }
@@ -51,6 +52,17 @@ After restarting Homebridge, the DoorBird will need to be manually paired in the
 3. Tap *Add Accessory*, and select *I Don't Have a Code or Cannot Scan*.
 4. Select the DoorBird for pairing.
 5. Enter the Homebridge PIN, this can be found under the QR code in Homebridge UI or your Homebridge logs, alternatively you can select *Use DoorBird* and scan the QR code again.
+
+### Feature Options
+Feature options allow you to enable or disable certain features in this plugin. There are plugin-wide feature options, and some that are specific to individual Doorbirds.
+
+The plugin-wide `options` setting is an array of strings used to customize feature options. Available options:
+
+* `Audio.Enable` - enable Doorbird audio support in HomeKit. **This requires a version of [FFmpeg](https://ffmpeg.org) that is compiled with `fdk-aac` support.**
+
+The feature options for individual Doorbird devices can be customized using the `options` setting inside the `doorbirds` section. Available options:
+
+* <CODE>Relay.Hide.<I>relay</I></CODE> - hide the relay named *relay* from being shown in HomeKit.
 
 ### Doorbird notification configuration
 Versions of `homebird-doorbird` prior to 0.3.0 required additional configuration in order to get notifications from Doorbird devices. Starting with 0.3.0, `homebridge-doorbird` uses the Doorbird monitoring API and no additional configuration is needed. If you previously configured notifications to Homebridge in the Doorbird, you can safely remove them by using the Doorbird app and navigating to Administration -> HTTP Calls and deleting the entries related to Homebridge.
@@ -70,8 +82,8 @@ Support for multiple relays is available on some Doorbird devices and on the fol
 
 All relays found on the Doorbird, including peripherals, will be made available in HomeKit and the Home app.
 
-You may switch the default relay using the `primaryRelay` configuration parameter. 
-To identify the relay names to use, review the homebridge log and look for log entries beginning with `detected relay: xxxx` to identify the relay you wish to use by default. 
+You may switch the default relay using the `primaryRelay` configuration parameter.
+To identify the relay names to use, review the homebridge log and look for log entries beginning with `detected relay: xxxx` to identify the relay you wish to use by default.
 In the previous example, you would use `"primaryRelay": "xxxx"` to set `xxxx` as the default relay to unlock.
 
 Example configuration for an alternate relay as the default:
@@ -84,7 +96,7 @@ Another example configuration using a relay on a peripheral device:
 "primaryRelay": "gggggg@1"
 ```
 
-The name of the controller or station can be found in the App: 
+The name of the controller or station can be found in the App:
 Administration > Peripherals > Device (6-letter word)
 
 ## Advanced configuration (optional)
@@ -96,7 +108,7 @@ This step is not required. For those that prefer to tailor the defaults to their
     "platform": "Doorbird",
     "name": "Doorbird",
     "videoProcessor": "/usr/local/bin/ffmpeg",
-    "audio": true,
+    "options": [ "Audio.Enable" ],
 
     "doorbirds": [
       {
@@ -106,10 +118,11 @@ This step is not required. For those that prefer to tailor the defaults to their
         "password": "some-doorbird-password",
         "primaryRelay": "1",
         "cmdDoorbell": "/some/doorbell/script",
-        "cmdMotion": "/some/motion/script"
+        "cmdMotion": "/some/motion/script",
+        "options": [ "Relay.Hide.2" ]
       }
     ],
-    
+
     "videoConfig": {
       "additionalCommandline": "-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0",
       "packetSize": 376,
@@ -129,7 +142,7 @@ Platform-level configuration parameters:
 | platform               | Must always be `Doorbird`.                              |                                                                                       | Yes      |
 | name                   | Name to use for the Doorbird platform.                  |                                                                                       | No       |
 | videoProcessor         | Specify path of ffmpeg or avconv.                       | "ffmpeg"                                                                              | No       |
-| audio                  | Enable audio support.                                   | false                                                                                 | No       |
+| options                | Configure plugin [feature options](#feature-options)).  |                                                                                       | No       |
 | debug                  | Enable debug logging.                                   | false                                                                                 | No       |
 
 `doorbirds` configuration parameters:
@@ -143,6 +156,7 @@ Platform-level configuration parameters:
 | primaryRelay           | Default relay to use for doorbell lock events.          | "1"                                                                                   | No       |
 | cmdDoorbell            | Command line to execute when a doorbell event is triggered. |                                                                                   | No       |
 | cmdMotion              | Command line to execute when a motion event is triggered. |                                                                                     | No       |
+| options                | Configure [feature options](#feature-options)) for this Doorbird.   |                                                                                       | No       |
 
 `videoConfig` configuration parameters:
 

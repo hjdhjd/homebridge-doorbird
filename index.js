@@ -21,7 +21,7 @@ function doorBirdPlatform(log, config, api) {
 
   self.log = log;
   self.config = config || {};
-  
+
   if(api) {
     self.api = api;
 
@@ -43,7 +43,7 @@ doorBirdPlatform.prototype = {
       var doorBirdPlatform = new doorBirdPlatform(this.log, this.devices[index]);
       foundAccessories.push(doorBirdPlatform);
     }
-    
+
     callback(foundAccessories);
   }
 };
@@ -64,29 +64,31 @@ doorBirdPlatform.prototype.EventWithAccessory = function(accessory) {
 doorBirdPlatform.prototype.didFinishLaunching = function() {
   var self = this;
   var videoProcessor = self.config.videoProcessor;
-  
+
   // Are we debugging everything?
   self.debug = self.config.debug === true;
-  
+
   if(self.config.doorbirds) {
     var configuredAccessories = [];
     var cameras = self.config.doorbirds;
-    
+    var options = self.config.options;
+
     self.doorBirds = {};
-    
+
     cameras.forEach(function(cameraConfig) {
       var doorBirdInfo = {};
       var cameraName = cameraConfig.name || self.config.name || 'Doorbird';
+      var cameraOpts = cameraConfig.options;
 
       // You must specify at least the IP of the Doorbird, a username, and a password.
       if(!cameraConfig.ip || !cameraConfig.username || !cameraConfig.password) {
         self.log('%s: missing required configuration parameters.', cameraName);
-        return;
+        return(Error("Unable to initialize the Doorbird plugin: missing configuration parameters."));
       }
-      
+
       // Shorten the alias to IP for convenience.
       var birdIndex = cameraConfig.ip;
-      
+
       // Initialize our state for this camera. We need to maintain state separately for each camera.
       self.doorBirds[birdIndex] = {};
 
@@ -99,7 +101,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
       // Doorbird log name.
       self.doorBirds[birdIndex].cameraLog = cameraName + '@' + cameraConfig.ip;
       var cameraLog = self.doorBirds[birdIndex].cameraLog;
-      
+
       // Optional command line actions for Doorbird events.
       self.doorBirds[birdIndex].cmdDoorbell = cameraConfig.cmdDoorbell;
       self.doorBirds[birdIndex].cmdMotion = cameraConfig.cmdMotion;
@@ -117,7 +119,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
       var source = '-re -rtsp_transport tcp -i rtsp://' + self.doorBirds[birdIndex].doorBirdAuth + ':8557/mpeg/media.amp';
       var stillImageSource = '-i http://' + self.doorBirds[birdIndex].doorBirdAuth + '/bha-api/image.cgi';
       var additionalCommandline = '-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0';
-      var audio = self.config.audio === true;
+      var audio = (options && options.indexOf("Audio.Enable") == -1) ? false : true;
       var mapaudio;
       var mapvideo;
       var maxStreams = 4;
@@ -126,17 +128,18 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
       var maxFPS = 15;
       var packetSize = 376;
       var videoDebug = false;
-      
+
       // Configure audio.
       if(audio) {
+        self.log("%s: enabling audio support.", cameraLog);
         source += ' -f mulaw -ar 8000 -i http://' + self.doorBirds[birdIndex].doorBirdAuth + '/bha-api/audio-receive.cgi';
         mapaudio = '1:0';
       }
-      
+
       // User-defined configuration to override the defaults.
       if(videoConfig) {
         videoDebug = videoConfig.debug === true;
-        
+
         if(videoConfig.source) {
           source = videoConfig.source;
         }
@@ -172,12 +175,12 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
         if(videoConfig.mapaudio) {
           mapaudio = videoConfig.mapaudio;
         }
-        
+
         if(videoConfig.mapvideo) {
           mapvideo = videoConfig.mapvideo;
         }
       }
-      
+
       // Get Doorbird device information.
       const infoOptions = {
         uri: 'http://' + self.doorBirds[birdIndex].doorBirdAuth + '/bha-api/info.cgi',
@@ -186,59 +189,66 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
 
       rp(infoOptions)
         .then(function(dbInfo) {
-          doorBirdInfo =  dbInfo.BHA.VERSION[0]; 
-          
+          doorBirdInfo =  dbInfo.BHA.VERSION[0];
+
           // Use the MAC address to uniquely identify each Doorbird.
           var doorBirdUUID = doorBirdInfo["PRIMARY_MAC_ADDR"] || doorBirdInfo["WIFI_MAC_ADDR"];
-          
+
           // Create the accessory.
-          var uuid = UUIDGen.generate(doorBirdUUID);          
+          var uuid = UUIDGen.generate(doorBirdUUID);
           var doorBirdAccessory = new Accessory(cameraName, uuid, hap.Accessory.Categories.VIDEO_DOORBELL);
 
           // Set the accessory information.
           doorBirdAccessory.getService(hap.Service.AccessoryInformation)
-            .setCharacteristic(hap.Characteristic.Manufacturer, 'Bird Home Automation GmbH')        
+            .setCharacteristic(hap.Characteristic.Manufacturer, 'Bird Home Automation GmbH')
             .setCharacteristic(hap.Characteristic.Model, doorBirdInfo["DEVICE-TYPE"])
             .setCharacteristic(hap.Characteristic.FirmwareRevision, doorBirdInfo["FIRMWARE"] + '.' + doorBirdInfo["BUILD_NUMBER"])
-            .setCharacteristic(hap.Characteristic.SerialNumber, doorBirdUUID);        
-    
+            .setCharacteristic(hap.Characteristic.SerialNumber, doorBirdUUID);
+
           // Check to see what relays we have available to us and add them.
           var relays = doorBirdInfo["RELAYS"];
-      
-          relays.forEach(function(doorBirdRelay) {                        
-            // Default to setting the primary relay to the first one unless configured otherwise.
-            if(!self.doorBirds[birdIndex].primaryRelay || cameraConfig.primaryRelay == doorBirdRelay) {
-              self.doorBirds[birdIndex].primaryRelay = doorBirdRelay;
+
+          relays.forEach(function(doorBirdRelay) {
+            if(cameraOpts && cameraOpts.indexOf("Relay.Hide." + doorBirdRelay) != -1) {
+              self.log("%s: hiding relay: %s.", cameraLog, doorBirdRelay);
+            } else {
+              // Default to setting the primary relay to the first one unless configured otherwise.
+              if(!self.doorBirds[birdIndex].primaryRelay || cameraConfig.primaryRelay == doorBirdRelay) {
+                self.doorBirds[birdIndex].primaryRelay = doorBirdRelay;
+              }
+
+              // Set the unlock URL.
+              self.doorBirds[birdIndex].lockUrl[doorBirdRelay] = 'http://' + self.doorBirds[birdIndex].doorBirdAuth +
+                '/bha-api/open-door.cgi?r=' + doorBirdRelay;
+
+              // Add the lock Accessory.
+              self.log("%s: detected relay: %s.", cameraLog, doorBirdRelay);
+              self.doorBirds[birdIndex].lockService[doorBirdRelay] = doorBirdAccessory.addService(Service.LockMechanism, 'Relay ' + doorBirdRelay, doorBirdRelay);
+
+              // Set the initial lock state to secured before we start listening to events from the lock.
+              self.doorBirds[birdIndex].lockState[doorBirdRelay] = Characteristic.LockCurrentState.SECURED;
+              self.doorBirds[birdIndex].lockService[doorBirdRelay]
+                .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
+              self.doorBirds[birdIndex].lockService[doorBirdRelay]
+                .setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
+
+              // Configure the events for LockMechanism.
+              self.doorBirds[birdIndex].lockService[doorBirdRelay]
+                .getCharacteristic(Characteristic.LockCurrentState)
+                .on('get', self.getState.bind(self, birdIndex, doorBirdRelay));
+
+              self.doorBirds[birdIndex].lockService[doorBirdRelay]
+                .getCharacteristic(Characteristic.LockTargetState)
+                .on('get', self.getState.bind(self, birdIndex, doorBirdRelay))
+                .on('set', self.setState.bind(self, birdIndex, doorBirdRelay));
             }
-    
-            // Set the unlock URL.
-            self.doorBirds[birdIndex].lockUrl[doorBirdRelay] = 'http://' + self.doorBirds[birdIndex].doorBirdAuth +
-              '/bha-api/open-door.cgi?r=' + doorBirdRelay;
-
-            // Add the lock Accessory.
-            self.log("%s: detected relay: %s.", cameraLog, doorBirdRelay);
-            self.doorBirds[birdIndex].lockService[doorBirdRelay] = doorBirdAccessory.addService(Service.LockMechanism, 'Relay ' + doorBirdRelay, doorBirdRelay);
-
-            // Set the initial lock state to secured before we start listening to events from the lock.
-            self.doorBirds[birdIndex].lockState[doorBirdRelay] = Characteristic.LockCurrentState.SECURED;
-            self.doorBirds[birdIndex].lockService[doorBirdRelay]
-              .setCharacteristic(Characteristic.LockCurrentState, Characteristic.LockCurrentState.SECURED);
-            self.doorBirds[birdIndex].lockService[doorBirdRelay]            
-              .setCharacteristic(Characteristic.LockTargetState, Characteristic.LockTargetState.SECURED);
-
-            // Configure the events for LockMechanism.
-            self.doorBirds[birdIndex].lockService[doorBirdRelay]
-              .getCharacteristic(Characteristic.LockCurrentState)
-              .on('get', self.getState.bind(self, birdIndex, doorBirdRelay));
-           
-            self.doorBirds[birdIndex].lockService[doorBirdRelay]
-              .getCharacteristic(Characteristic.LockTargetState)
-              .on('get', self.getState.bind(self, birdIndex, doorBirdRelay))
-              .on('set', self.setState.bind(self, birdIndex, doorBirdRelay));
           });
 
           if(self.doorBirds[birdIndex].primaryRelay) {
             self.log("%s: primary relay set to: %s.", cameraLog, self.doorBirds[birdIndex].primaryRelay);
+          } else {
+            self.log("%s: no relays have been configured. The Doorbird must have at least one active relay.", cameraLog);
+            return(Error("Unable to initialize the Doorbird plugin: no relays configured."));
           }
 
           // Add the motion accessory.
@@ -249,15 +259,15 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
 
           self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On)
             .on('set', function(value, callback) {
-          
+
               // If we're already on, don't allow us to be turned off until the timer runs out.
               if(self.doorBirds[birdIndex].lightPoll) {
                 self.log("%s: Doorbird night vision is already active.", cameraLog);
-            
+
                 setTimeout(function() {
                   self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On).updateValue(true);
                 }.bind(self), 10);
-            
+
               } else {
                 request.get({
                   url: self.doorBirds[birdIndex].lightUrl,
@@ -267,7 +277,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
                     if(self.doorBirds[birdIndex].lightPoll) {
                       clearTimeout(self.doorBirds[birdIndex].lightPoll);
                     }
-              
+
                     self.log('%s: Doorbird infrared light activated for 3 minutes.', cameraLog);
 
                     self.doorBirds[birdIndex].lightPoll = setTimeout(function() {
@@ -280,19 +290,19 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
                   }
                 });
             }
-          
+
             callback();
           });
 
           // Doorbell has to be the primary service.
           var primaryService = new Service.Doorbell(cameraName);
           primaryService.getCharacteristic(Characteristic.ProgrammableSwitchEvent)
-            .on('get', self.getState.bind(this, birdIndex, self.doorBirds[birdIndex].primaryRelay));        
-      
+            .on('get', self.getState.bind(this, birdIndex, self.doorBirds[birdIndex].primaryRelay));
+
           // Setup and configure the camera services.
           var doorbirdCamera = {
             name: cameraName,
-        
+
             videoConfig: {
               source: source,
               stillImageSource: stillImageSource,
@@ -309,7 +319,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
             }
           };
 
-          var cameraSource = new FFMPEG(hap, doorbirdCamera, self.log, videoProcessor);          
+          var cameraSource = new FFMPEG(hap, doorbirdCamera, self.log, videoProcessor);
           doorBirdAccessory.configureCameraSource(cameraSource);
 
           // Setup HomeKit doorbell service
@@ -334,7 +344,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
 
           // Connect to the Doorbird monitor API.
           self.doorBirdEvents(birdIndex, doorBirdAccessory);
-          
+
         })
       .catch(function(error) {
         self.log("%s: error in configuring this Doorbird: %s", cameraLog, error);
@@ -352,13 +362,13 @@ doorBirdPlatform.prototype.getState = function(birdIndex, relayIndex, callback) 
 doorBirdPlatform.prototype.setState = function(birdIndex, relayIndex, state, callback) {
   var lockState = (state == Characteristic.LockTargetState.SECURED) ? "locking" : "unlocking";
   var updateState = (state == Characteristic.LockTargetState.SECURED) ? true : false;
-  
+
   var self = this;
-  
+
   if(self.debug) {
     self.log("%s: relay %s %s.", self.doorBirds[birdIndex].cameraLog, relayIndex, lockState);
   }
-  
+
   self.doorBirds[birdIndex].lockState[relayIndex] = (state == Characteristic.LockTargetState.SECURED) ? Characteristic.LockCurrentState.SECURED : Characteristic.LockCurrentState.UNSECURED;
 
   if(lockState == "unlocking") {
@@ -397,7 +407,7 @@ doorBirdPlatform.prototype.doorBirdEventMotion = function(birdIndex, birdAccesso
   var self = this;
   var thisBird = self.doorBirds[birdIndex];
   var cameraLog = thisBird.cameraLog;
-  
+
   // Tell the sensor we've detected motion.
   setTimeout(function() {
     self.log('%s: Doorbird detected motion.', cameraLog);
@@ -454,7 +464,7 @@ doorBirdPlatform.prototype.doorBirdEvents = function(birdIndex, birdAccessory) {
   var thisBird = self.doorBirds[birdIndex];
   var cameraLog = thisBird.cameraLog;
   var contentBoundary;
-  
+
   // We want to monitor all motion and doorbell events.
   // Doorbird has roughly a 20 second heartbeat interval in the monitor API so we use 25 seconds just to be safe.
   const monOptions = {
@@ -485,7 +495,7 @@ doorBirdPlatform.prototype.doorBirdEvents = function(birdIndex, birdAccessory) {
     var reBoundary = /(?<=^multipart\/x-mixed-replace; boundary=).*$/;
 
     var ctParse = reBoundary.exec(contentType);
-   
+
     if(ctParse) {
       contentBoundary = ctParse[0];
     } else {
