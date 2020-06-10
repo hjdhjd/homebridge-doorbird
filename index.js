@@ -119,7 +119,7 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
       var source = '-re -rtsp_transport tcp -i rtsp://' + self.doorBirds[birdIndex].doorBirdAuth + ':8557/mpeg/media.amp';
       var stillImageSource = '-i http://' + self.doorBirds[birdIndex].doorBirdAuth + '/bha-api/image.cgi';
       var additionalCommandline = '-preset slow -profile:v high -level 4.2 -x264-params intra-refresh=1:bframes=0';
-      var audio = (options && options.indexOf("Audio.Enable") == -1) ? false : true;
+      var audio = (options && options.indexOf("Audio.Enable") != -1) ? true : false;
       var mapaudio;
       var mapvideo;
       var maxStreams = 4;
@@ -260,35 +260,35 @@ doorBirdPlatform.prototype.didFinishLaunching = function() {
           self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On)
             .on('set', function(value, callback) {
 
-              // If we're already on, don't allow us to be turned off until the timer runs out.
-              if(self.doorBirds[birdIndex].lightPoll) {
-                self.log("%s: Doorbird night vision is already active.", cameraLog);
+            // If we're already on, don't allow us to be turned off until the timer runs out.
+            if(self.doorBirds[birdIndex].lightPoll) {
+              self.log("%s: Doorbird night vision is already active.", cameraLog);
 
-                setTimeout(function() {
-                  self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On).updateValue(true);
-                }.bind(self), 10);
+              setTimeout(function() {
+                self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On).updateValue(true);
+              }.bind(self), 10);
 
-              } else {
-                request.get({
-                  url: self.doorBirds[birdIndex].lightUrl,
-                }, function(err, response, body) {
-                  if(!err && response.statusCode == 200) {
-                    // Clear old countdowns first.
-                    if(self.doorBirds[birdIndex].lightPoll) {
-                      clearTimeout(self.doorBirds[birdIndex].lightPoll);
-                    }
-
-                    self.log('%s: Doorbird infrared light activated for 3 minutes.', cameraLog);
-
-                    self.doorBirds[birdIndex].lightPoll = setTimeout(function() {
-                      self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On).updateValue(false);
-                      self.doorBirds[birdIndex].lightPoll = 0;
-                    }.bind(self), 1000 * 60 * 3);
-                  } else {
-                    self.log("%s: Doorbird error '%s' setting the light state. Response: %s", cameraLog, err, body);
-                    callback(err || new Error('Error setting the light state.'));
+            } else {
+              request.get({
+                url: self.doorBirds[birdIndex].lightUrl,
+              }, function(err, response, body) {
+                if(!err && response.statusCode == 200) {
+                  // Clear old countdowns first.
+                  if(self.doorBirds[birdIndex].lightPoll) {
+                    clearTimeout(self.doorBirds[birdIndex].lightPoll);
                   }
-                });
+
+                  self.log('%s: Doorbird infrared light activated for 3 minutes.', cameraLog);
+
+                  self.doorBirds[birdIndex].lightPoll = setTimeout(function() {
+                    self.doorBirds[birdIndex].lightService.getCharacteristic(Characteristic.On).updateValue(false);
+                    self.doorBirds[birdIndex].lightPoll = 0;
+                  }.bind(self), 1000 * 60 * 3);
+                } else {
+                  self.log("%s: Doorbird error '%s' setting the light state. Response: %s", cameraLog, err, body);
+                  callback(err || new Error('Error setting the light state.'));
+                }
+              });
             }
 
             callback();
