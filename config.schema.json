@@ -68,7 +68,7 @@
               "type": "string"
             },
 
-            "nightVisionSnapshots": {
+            "nightVisionSnapshot": {
               "title": "Use Night Vision for Snapshots (Always)",
               "description": "Always enable night vision for snapshots.",
               "type": "boolean"
@@ -86,7 +86,7 @@
               "type": "boolean"
             },
 
-            "nightVisionSnapshotsNight": {
+            "nightVisionSnapshotNight": {
               "title": "Use Night Vision for Snapshots (Night)",
               "description": "Always enable night vision for snapshots at night.",
               "type": "boolean"
@@ -170,10 +170,10 @@
         "doorbirds[].name",
         "doorbirds[].primaryRelay",
         "doorbirds[].snapshotUrl",
-        "doorbirds[].nightVisionSnapshotsNight",
+        "doorbirds[].nightVisionSnapshotNight",
         "doorbirds[].nightVisionDoorbellNight",
         "doorbirds[].nightVisionVideoNight",
-        "doorbirds[].nightVisionSnapshots",
+        "doorbirds[].nightVisionSnapshot",
         "doorbirds[].nightVisionDoorbell",
         "doorbirds[].nightVisionVideo",
         "doorbirds[].cmdDoorbell",
