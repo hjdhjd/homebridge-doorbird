@@ -3,39 +3,20 @@
   "pluginType": "platform",
   "singular": true,
   "headerDisplay": "homebridge-doorbird: Nearly complete HomeKit support for Doorbird. See the [Github project page](https://github.com/brownad/homebridge-doorbird) for more documentation.",
-  "footerDisplay": "The **ffmpeg** binary must be installed on your system for this plugin to work.<BR>For audio support, make sure your version of ffmpeg is compiled with support for **fdk-aac**.",
+  "footerDisplay": "The **ffmpeg** binary must be installed on your system for this plugin to work. For audio support, make sure your version of ffmpeg is compiled with support for **fdk-aac**.",
+
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
-        "description": "Name to use for logging purposes in homebridge. Default: Doorbird",
-        "type": "string"
-      },
-
-      "videoProcessor": {
-        "title": "Video Processor",
-        "description": "Path to ffmpeg or your preferred video processor. Default: ffmpeg",
-        "type": "string"
-      },
-
-      "ffmpegOptions": {
-        "title": "FFmpeg Options",
-        "description": "Alternate command line options for ffmpeg.",
-        "type": "string"
-      },
 
       "doorbirds": {
         "type": "array",
+        "title": "Doorbirds",
+
         "items": {
-          "title": "Doorbird Configuration",
           "type": "object",
+          "title": "Doorbird Configuration",
           "properties": {
-            "name": {
-              "title": "Doorbird Name",
-              "description": "Name to use for this Doorbird.",
-              "type": "string"
-            },
 
             "ip": {
               "title": "DoorBird IP Address",
@@ -60,6 +41,12 @@
               "type": "string",
               "placeholder": "Enter Doorbird password",
               "required": true
+            },
+
+            "name": {
+              "title": "Doorbird Name",
+              "description": "Name to use for this Doorbird.",
+              "type": "string"
             },
 
             "primaryRelay": {
@@ -123,14 +110,37 @@
             },
 
             "options": {
-              "title": "Doorbird Feature Options",
               "type": "array",
+              "title": "Doorbird Feature Options",
+
               "items": {
-                "type": "string"
+                "type": "string",
+                "title": "Feature Option",
+                "required": false,
+                "description": "Enter only one option per entry. See project page for the complete list of available options.",
+                "placeholder": "e.g. Relay.Hide.2"
               }
             }
           }
         }
+      },
+
+      "name": {
+        "title": "Name",
+        "description": "Name to use for logging purposes in homebridge. Default: Doorbird",
+        "type": "string"
+      },
+
+      "videoProcessor": {
+        "title": "Video Processor",
+        "description": "Path to ffmpeg or your preferred video processor. Default: ffmpeg",
+        "type": "string"
+      },
+
+      "ffmpegOptions": {
+        "title": "FFmpeg Options",
+        "description": "Alternate command line options for ffmpeg.",
+        "type": "string"
       },
 
       "debug": {
@@ -143,70 +153,107 @@
 
   "layout": [
     {
-      "key": "",
-      "title": "General Options",
-      "type": "fieldset",
-      "orderable": false,
-      "expandable": true,
-      "expanded": false,
-      "items": [
-        "name",
-        "videoProcessor"
-      ]
-    },
-
-    {
-      "key": "doorbirds",
+      "type": "section",
       "title": "Doorbirds",
-      "buttonText": "Add Doorbird",
-      "type": "fieldset",
-      "orderable": false,
       "expandable": true,
       "expanded": false,
       "items": [
-        "doorbirds[].ip",
-        "doorbirds[].username",
-        "doorbirds[].password",
-        "doorbirds[].name",
-        "doorbirds[].primaryRelay",
-        "doorbirds[].snapshotUrl",
-        "doorbirds[].nightVisionSnapshotNight",
-        "doorbirds[].nightVisionDoorbellNight",
-        "doorbirds[].nightVisionVideoNight",
-        "doorbirds[].nightVisionSnapshot",
-        "doorbirds[].nightVisionDoorbell",
-        "doorbirds[].nightVisionVideo",
-        "doorbirds[].cmdDoorbell",
-        "doorbirds[].cmdMotion",
         {
-          "name": "Doorbird Feature Options (Optional)",
-          "buttonText": "Add Feature Option To This Doorbird",
+          "key": "doorbirds",
           "type": "array",
+          "name": " ",
+          "description": "Provide the IP address and login details of your Doorbirds.",
           "orderable": false,
-          "expandable": true,
-          "expanded": true,
+          "buttonText": "Add Doorbird",
           "items": [
+            "doorbirds[].ip",
+            "doorbirds[].username",
+            "doorbirds[].password",
+            "doorbirds[].name",
+
             {
-              "key": "doorbirds[].options[]",
-              "description": "Enter only one option per entry. See project page for the complete list of available options.",
-              "placeholder": "e.g. Relay.Hide.2"
+              "key": "doorbirds[]",
+              "type": "section",
+              "title": "Feature Options",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                {
+                  "key": "doorbirds[].options",
+                  "type": "array",
+                  "name": " ",
+                  "description": "Feature Options allow you to further configure how this plugin works.",
+                  "orderable": false,
+                  "buttonText": "Add Feature Option",
+                  "items": [
+                    "doorbirds[].options[]"
+                  ]
+                }
+              ]
+            },
+
+            {
+              "key": "doorbirds[]",
+              "type": "section",
+              "title": "Night Vision Settings",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                {
+                  "description": "These settings allow you to configure how night vision is used on the Doorbird.",
+                  "items": [
+                    "doorbirds[].nightVisionSnapshotNight",
+                    "doorbirds[].nightVisionDoorbellNight",
+                    "doorbirds[].nightVisionVideoNight",
+                    "doorbirds[].nightVisionSnapshot",
+                    "doorbirds[].nightVisionDoorbell",
+                    "doorbirds[].nightVisionVideo"
+                  ]
+                }
+              ]
+            },
+
+            {
+              "key": "doorbirds[]",
+              "type": "section",
+              "title": "Optional Settings",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                {
+                  "description": "These settings provide additional customization options for this plugin.",
+                  "items": [
+                    "doorbirds[].primaryRelay",
+                    "doorbirds[].snapshotUrl",
+                    "doorbirds[].cmdDoorbell",
+                    "doorbirds[].cmdMotion"
+                  ]
+                }
+              ]
             }
           ]
         }
       ]
     },
 
+
     {
-      "key": "",
-      "title": "Advanced Options (Optional)",
-      "type": "fieldset",
-      "orderable": false,
+      "type": "section",
+      "title": "Additional Settings (Optional)",
       "expandable": true,
       "expanded": false,
       "items": [
-        "ffmpegOptions",
-        "debug"
+        {
+          "description": "These settings should be rarely used or needed by most people. Use these with caution.",
+          "items": [
+            "name",
+            "videoProcessor",
+            "ffmpegOptions",
+            "debug"
+          ]
+        }
       ]
     }
+
   ]
 }
