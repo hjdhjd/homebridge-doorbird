@@ -5,7 +5,7 @@
 import daynight from "daynight";
 import { DoorbirdStation } from "./doorbird-station";
 import { DoorbirdConfig } from "./doorbird-types";
-import { API, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig } from "homebridge";
+import { API, APIEvent, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig } from "homebridge";
 import { DOORBIRD_FFMPEG_OPTIONS } from "./settings";
 import util from "util";
 
@@ -46,8 +46,25 @@ export class DoorbirdPlatform implements DynamicPlatformPlugin {
       config.ffmpegOptions = DOORBIRD_FFMPEG_OPTIONS;
     }
 
+    // Avoid a prospective race condition by waiting to configure our Doorbirds until Homebridge is done
+    // loading all the cached accessories it knows about, and calling configureAccessory() on each.
+    api.on(APIEvent.DID_FINISH_LAUNCHING, this.launchDoorbirds.bind(this));
+  }
+
+  // This gets called when homebridge restores cached accessories at startup. We
+  // intentionally avoid doing anything significant here, and save all that logic
+  // for device discovery.
+  configureAccessory(accessory: PlatformAccessory): void {
+
+    // Add this to the accessory array so we can track it.
+    this.accessories.push(accessory);
+  }
+
+  // Launch Doorbirds.
+  private launchDoorbirds(): void {
+
     // Loop through each configured Doorbird and instantiate it.
-    for(const doorbirdStationConfig of config.doorbirds) {
+    for(const doorbirdStationConfig of this.config.doorbirds) {
 
       // We need an IP address, or there's nothing to do.
       if(!doorbirdStationConfig.ip) {
@@ -71,20 +88,6 @@ export class DoorbirdPlatform implements DynamicPlatformPlugin {
 
       this.doorbirds.push(new DoorbirdStation(this, doorbirdStationConfig));
     }
-
-    // This event gets fired after homebridge has restored all cached accessories and called their respective
-    // `configureAccessory` function.
-    //
-    // Fire off our polling, and let's get the party started.
-    // api.on(APIEvent.DID_FINISH_LAUNCHING, this.pollControllers.bind(this));
-  }
-
-  // This gets called when homebridge restores cached accessories at startup. We
-  // intentionally avoid doing anything significant here, and save all that logic
-  // for device discovery.
-  configureAccessory(accessory: PlatformAccessory): void {
-    // Add this to the accessory array so we can track it.
-    this.accessories.push(accessory);
   }
 
   // Utility function to determine whether it's day or night.

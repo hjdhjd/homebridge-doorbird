@@ -44,4 +44,4 @@ export interface DoorbirdStationConfigInterface {
 // every property as readonly along the way.
 export type DoorbirdDeviceInfo = Readonly<DoorbirdDeviceInfoInterface>;
 export type DoorbirdConfig = Readonly<DoorbirdConfigInterface>;
-export type DoorbirdStationConfig = Readonly<DoorbirdStationConfigInterface>;
+export type DoorbirdStationConfig = DoorbirdStationConfigInterface;
