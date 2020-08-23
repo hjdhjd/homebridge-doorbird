@@ -88,7 +88,7 @@ export class DoorbirdStation {
   private async configureDoorbird(): Promise<boolean> {
 
     // Login to the Doorbird.
-    if(!(await this.dbApi.login())) {
+    if(!(await this.dbApi.login()) || !this.dbApi.mac) {
       return false;
     }
 
@@ -177,6 +177,7 @@ export class DoorbirdStation {
 
     // Refresh the accessory cache with these values.
     this.api.updatePlatformAccessories([this.accessory]);
+
     return true;
   }
 
@@ -390,8 +391,8 @@ export class DoorbirdStation {
     this.accessory.addService(doorbellService)
       .getCharacteristic(this.hap.Characteristic.ProgrammableSwitchEvent)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        // Provide the status of our primary relay.
-        callback(null, this.relayCurrentState[this.primaryRelay]);
+        // HomeKit wants this to always be null.
+        callback(null, null);
       });
 
     doorbellService.setPrimaryService(true);
