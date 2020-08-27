@@ -4,8 +4,8 @@
 
 # Homebridge Doorbird
 
-[![Downloads](https://badgen.net/npm/dt/homebridge-doorbird)](https://www.npmjs.com/package/homebridge-doorbird)
-[![Version](https://badgen.net/npm/v/homebridge-doorbird)](https://www.npmjs.com/package/homebridge-doorbird)
+[![Downloads](https://img.shields.io/npm/dt/homebridge-doorbird?color=38A8E0&style=for-the-badge)](https://www.npmjs.com/package/homebridge-doorbird)
+[![Version](https://img.shields.io/npm/v/homebridge-doorbird?label=homebridge-doorbird&color=38A8E0&style=for-the-badge)](https://www.npmjs.com/package/homebridge-doorbird)
 
 ## HomeKit support for Doorbird video doorbells using [Homebridge](https://homebridge.io).
 </SPAN>
