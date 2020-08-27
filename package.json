@@ -3,18 +3,18 @@
   "version": "1.0.1",
   "displayName": "Homebridge Doorbird",
   "description": "Nearly complete HomeKit integration for Doorbird doorbells.",
-  "author": "Adrian Brown",
+  "author": "HJDHJD https://github.com/hjdhjd",
   "contributors": {
-    "name": "HJDHJD https://github.com/hjdhjd"
+    "name": "Adrian Brown"
   },
-  "homepage": "https://github.com/brownad/homebridge-doorbird#readme",
+  "homepage": "https://github.com/hjdhjd/homebridge-doorbird#readme",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git://github.com/brownad/homebridge-doorbird.git"
+    "url": "git://github.com/hjdhjd/homebridge-doorbird.git"
   },
   "bugs": {
-    "url": "https://github.com/github.com/brownad/homebridge-doorbird/issues"
+    "url": "https://github.com/hjdhjd/homebridge-doorbird/issues"
   },
   "keywords": [
     "camera",
@@ -45,10 +45,10 @@
   "main": "dist/index.js",
   "devDependencies": {
     "@types/ip": "^1.1.0",
-    "@types/node": "^14.6.0",
+    "@types/node": "^14.6.1",
     "@types/node-fetch": "^2.5.7",
-    "@typescript-eslint/eslint-plugin": "^3.9.1",
-    "@typescript-eslint/parser": "^3.9.1",
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
+    "@typescript-eslint/parser": "^3.10.1",
     "eslint": "^7.7.0",
     "homebridge": "^1.1.2",
     "rimraf": "^3.0.2",
