@@ -97,18 +97,6 @@
               "type": "string"
             },
 
-            "cmdDoorbell": {
-              "title": "Doorbell Command",
-              "description": "Command line to execute when a doorbell event is detected.",
-              "type": "string"
-            },
-
-            "cmdMotion": {
-              "title": "Motion Command",
-              "description": "Command line to execute when a motion event is detected.",
-              "type": "string"
-            },
-
             "options": {
               "type": "array",
               "title": "Doorbird Feature Options",
@@ -224,9 +212,7 @@
                   "description": "These settings provide additional customization options for this plugin.",
                   "items": [
                     "doorbirds[].primaryRelay",
-                    "doorbirds[].snapshotUrl",
-                    "doorbirds[].cmdDoorbell",
-                    "doorbirds[].cmdMotion"
+                    "doorbirds[].snapshotUrl"
                   ]
                 }
               ]
