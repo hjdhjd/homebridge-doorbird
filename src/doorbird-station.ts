@@ -236,6 +236,12 @@ export class DoorbirdStation {
       this.accessory.removeService(lightService);
     }
 
+    // Must I hide the night vision trigger
+    if(this.options.indexOf("NIGHTVISION.HIDE") !== -1) {
+      this.log("%s: Hiding night vision trigger", this.name);
+      return true;
+    }
+
     // Grab the lightbulb service.
     lightService = new this.hap.Service.Lightbulb(this.accessory.displayName);
 
@@ -365,11 +371,11 @@ export class DoorbirdStation {
         });
     }
 
-    // No relays configured...we error out.
-    if(!this.primaryRelay) {
-      this.log("%s: no relays have been configured. The Doorbird must have at least one active relay.", this.name);
-      return false;
-    }
+    // // No relays configured...we error out.
+    // if(!this.primaryRelay) {
+    //   this.log("%s: no relays have been configured. The Doorbird must have at least one active relay.", this.name);
+    //   return false;
+    // }
 
     return true;
   }
@@ -425,14 +431,20 @@ export class DoorbirdStation {
       return false;
     }
 
-    // Reflect our status in HomeKit.
+    const isNightVisionHidden = this.options.indexOf("NIGHTVISION.HIDE") !== -1
+
+    // Reflect our status in HomeKit if the accessory isn't hidden.
     const lightService = this.accessory.getService(this.hap.Service.Lightbulb);
 
-    if(!lightService) {
+    // The lightService should exist if isNightVisionHidden is false.
+    if(!lightService && !isNightVisionHidden) {
       return false;
     }
 
-    lightService!.getCharacteristic(this.hap.Characteristic.On).updateValue(this.nightVision);
+    // Night Vision accessory only need to be updated when isNightVisionHidden is false.
+    if (!isNightVisionHidden) {
+      lightService!.getCharacteristic(this.hap.Characteristic.On).updateValue(this.nightVision);
+    }
 
     // We've activated the light, now set a timer to turn it off in HomeKit. The light is automatically turned off after
     // 3 minutes on the Doorbird itself. It's not user-configurable.
@@ -441,7 +453,11 @@ export class DoorbirdStation {
 
     this.nightVisionTimer = setTimeout(() => {
       self.nightVision = false;
-      self.accessory.getService(this.hap.Service.Lightbulb)!.getCharacteristic(this.hap.Characteristic.On).updateValue(self.nightVision);
+
+      // Night Vision accessory only need to be updated when isNightVisionHidden is false.
+      if (!isNightVisionHidden) {
+        self.accessory.getService(this.hap.Service.Lightbulb)!.getCharacteristic(this.hap.Characteristic.On).updateValue(self.nightVision);
+      }
 
       // We also check to see if we're currently doing something that requires this light on. In practice,
       // what it means is that video streaming needs to be validated.

@@ -61,7 +61,7 @@ Feature options allow you to enable or disable certain features in this plugin. 
 The feature options for individual Doorbird devices can be customized using the `options` setting inside the `doorbirds` section. Available options:
 
 * <CODE>Relay.Hide.<I>relay</I></CODE> - hide the relay named *relay* from being shown in HomeKit.
-
+* <CODE>NightVision.Hide</CODE> - hide the night vision accessory from being shown in HomeKit (note that you won't be able to manually control the infrared light, see [Night vision](#night-vision) to automatically turn on the night vision).
 ### Night vision
 Depending on your situation, you might benefit from having Doorbird's infrared light (aka night vision) turn on automatically for you.
 
