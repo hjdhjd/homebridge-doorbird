@@ -58,7 +58,7 @@
     "abort-controller": "^3.0.0",
     "daynight": "^2.0.10",
     "execa": "^5.0.0",
-    "ffmpeg-for-homebridge": "0.0.9",
+    "ffmpeg-for-homebridge": "0.0.10",
     "get-port": "^5.1.1",
     "ip": "^1.1.5",
     "node-fetch": "^2.6.1"
